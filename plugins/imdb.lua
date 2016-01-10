@@ -1,8 +1,11 @@
-local command = 'imdb <query>'
-local doc = [[```
-/imdb <query>
-Returns an IMDb entry.
-```]]
+local command_id = '13'
+local command = 'imdb'
+
+local doc = [[
+	/imdb  <filme>
+
+Retorna uma pesquisa IMDB
+]]
 
 local triggers = {
 	'^/imdb[@'..bot.username..']*'
@@ -15,7 +18,7 @@ local action = function(msg)
 		if msg.reply_to_message and msg.reply_to_message.text then
 			input = msg.reply_to_message.text
 		else
-			sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+			sendReply(msg, doc)
 			return
 		end
 	end
@@ -35,12 +38,12 @@ local action = function(msg)
 		return
 	end
 
-	local output = '[' .. jdat.Title .. '](http://imdb.com/title/'
-	output = output .. jdat.imdbID .. ') ('.. jdat.Year ..')\n'
-	output = output .. jdat.imdbRating ..'/10 | '.. jdat.Runtime ..' | '.. jdat.Genre ..'\n'
-	output = output .. jdat.Plot
+	local message = 'Nome: ' .. jdat.Title ..' ('.. jdat.Year ..')\n'
+	message = message .. 'Avaliação: ' .. jdat.imdbRating ..'\nGênero: '.. jdat.Genre ..'\n'
+	message = message .. jdat.Runtime ..' | ' .. jdat.Plot .. '\n'
+	message = message .. 'Link: http://imdb.com/title/' .. jdat.imdbID
 
-	sendMessage(msg.chat.id, output, true, nil, true)
+	sendReply(msg, message)
 
 end
 
@@ -48,5 +51,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

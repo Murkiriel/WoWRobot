@@ -1,13 +1,14 @@
-local command = 'pokedex <query>'
-local doc = [[```
-/pokedex <query>
-Returns a Pokedex entry from pokeapi.co.
-Alias: /dex
-```]]
+local command_id = '16'
+local command = 'pokedex'
+
+local doc = [[
+	/pokedex <pokemon>
+
+Retorna uma entrada Pokedex de pokeapi.co
+]]
 
 local triggers = {
-	'^/pokedex[@'..bot.username..']*',
-	'^/dex[@'..bot.username..']*'
+	'^/[poke]*dex[@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -17,7 +18,7 @@ local action = function(msg)
 		if msg.reply_to_message and msg.reply_to_message.text then
 			input = msg.reply_to_message.text
 		else
-			sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+			sendReply(msg, doc)
 			return
 		end
 	end
@@ -53,10 +54,9 @@ local action = function(msg)
 	end
 	poke_type = poke_type .. ' type'
 
-	local output = '*' .. dex_jdat.name .. '*\n#' .. dex_jdat.national_id .. ' | ' .. poke_type .. '\n_' .. desc_jdat.description:gsub('POKMON', 'Pokémon'):gsub('Pokmon', 'Pokémon') .. '_'
+	local message = dex_jdat.name .. ' #' .. dex_jdat.national_id .. '\n' .. poke_type .. '\nAltura: ' .. dex_jdat.height/10 .. 'm, Peso: ' .. dex_jdat.weight/10 .. 'Kg\n' .. desc_jdat.description:gsub('POKMON', 'POKeMON')
 
-
-	sendMessage(msg.chat.id, output, true, nil, true)
+	sendReply(msg, message)
 
 end
 
@@ -64,5 +64,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

@@ -1,37 +1,75 @@
- -- Moderation for Liberbot groups.
- -- The bot must be made an admin.
- -- Put this near the top, after blacklist.
- -- If you want to enable antisquig, put that at the top, before blacklist.
+ -- Moderação para grupos Liberbot
+ -- O bot deve ser feito por um administrador
+ -- Colocar este perto do topo, depois da blacklist
+ -- Se você quiser ativar antisquig, colocar isso no topo, antes de lista negra
 
-moddat = load_data('moderation.json')
-antisquig = {}
+local command_id = '0'
+local command = 'moderacao'
+
+local doc = [[
+	/moderacao
+
+Sistema de moderação para grupos
+]]
+
+
+local triggers = {
+	'^/modajuda[@'..bot.username..']*',
+	'^/modlista[@'..bot.username..']*',
+	'^/modcast[@'..bot.username..']*',
+	'^/modadd[@'..bot.username..']*',
+	'^/modrem[@'..bot.username..']*',
+	'^/modprom[@'..bot.username..']*',
+	'^/modreb[@'..bot.username..']*',
+	'^/kickar[@'..bot.username..']*',
+	'^/banir[@'..bot.username..']*',
+	'^/addregras[@'..bot.username..']*',
+	'^/regras[@'..bot.username..']*',
+	'^/moderacao[@'..bot.username..']*',
+	'^/bemvindo[@'..bot.username..']*'
+}
 
 local commands = {
 
-	['^/modhelp[@'..bot.username..']*$'] = function(msg)
+	['^/moderacao[@'..bot.username..']*'] = function(msg)
+
+		return 'Chame o @' .. config.admin_name .. ' para que ele possa lhe ajudar com a moderação do seu grupo'
+
+	end,
+
+	['^/modajuda[@'..bot.username..']*'] = function(msg)
+
+		local moddat = load_data('moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
 		end
 
 		local message = [[
-			/modlist - List the moderators and administrators of this group.
-			Moderator commands:
-			/modkick - Kick a user from this group.
-			/modban - Ban a user from this group.
-			Administrator commands:
-			/modadd - Add this group to the moderation system.
-			/modrem - Remove this group from the moderation system.
-			/modprom - Promote a user to a moderator.
-			/moddem - Demote a moderator to a user.
-			/modcast - Send a broadcast to every moderated group.
-		]]
+/modlista - Listar os moderadores e administradores deste grupo
+/regras - Ver regras do grupo
+
+Comandos do administrador:
+/addregras - Adicionar regras ao grupo
+/bemvindo - Ativar/desativar mensagens de 'Bem-vindo'
+/modadd - Adicionar este grupo ao sistema de moderação
+/modrem - Remover este grupo do sistema de moderação
+/modprom - Promover um usuário à moderador.
+/modreb - Rebaixar um moderador à usuário.
+/modcast - Enviar um broadcast para cada grupo moderado
+]]
 
 		return message
 
 	end,
 
-	['^/modlist[@'..bot.username..']*$'] = function(msg)
+	['^/modlista[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
@@ -40,17 +78,19 @@ local commands = {
 		local message = ''
 
 		for k,v in pairs(moddat[msg.chat.id_str]) do
-			message = message .. ' - ' .. v .. ' (' .. k .. ')\n'
+			message = message .. ' - ' .. v .. ' \n'
 		end
 
 		if message ~= '' then
-			message = 'Moderators for ' .. msg.chat.title .. ':\n' .. message .. '\n'
+			message = 'Moderadores do Grupo ' .. msg.chat.title .. ':\n' .. message .. '\n'
+		else
+			message = 'Moderadores do Grupo ' .. msg.chat.title .. ' ainda não definidos'
 		end
 
-		message = message .. 'Administrators for ' .. config.moderation.realm_name .. ':\n'
-		for k,v in pairs(config.moderation.admins) do
-			message = message .. ' - ' .. v .. ' (' .. k .. ')\n'
-		end
+		--message = message .. 'Administradores do Grupo ' .. config.moderation.realm_name .. ':\n'
+		--for k,v in pairs(config.moderation.admins) do
+			--message = message .. ' - ' .. v .. ' (' .. k .. ')\n'
+		--end
 
 		return message
 
@@ -58,48 +98,70 @@ local commands = {
 
 	['^/modcast[@'..bot.username..']*'] = function(msg)
 
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
 		local message = msg.text:input()
 		if not message then
-			return 'You must include a message.'
+			return 'Você deve incluir uma mensagem'
 		end
 
 		if msg.chat.id ~= config.moderation.admin_group then
-			return 'This command must be run in the administration group.'
+			return 'Você não possui poderes para isso :['
 		end
 
 		if not config.moderation.admins[msg.from.id_str] then
 			return config.errors.not_admin
 		end
 
+		local moddat = load_data('moderation.json')
+
 		for k,v in pairs(moddat) do
-			sendMessage(k, message)
+			i, j = string.find(k, 'regras')
+
+			if i == nil then
+				sendMessage(k, message)
+			end
 		end
 
-		return 'Your broadcast has been sent.'
+		return 'O seu broadcast foi enviado'
 
 	end,
 
-	['^/modadd[@'..bot.username..']*$'] = function(msg)
+	['^/modadd[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
 
 		if not config.moderation.admins[msg.from.id_str] then
 			return config.errors.not_admin
 		end
 
+		local moddat = load_data('moderation.json')
+
 		if moddat[msg.chat.id_str] then
-			return 'I am already moderating this group.'
+			return 'Eu já estou moderando este grupo'
 		end
 
 		moddat[msg.chat.id_str] = {}
 		save_data('moderation.json', moddat)
-		return 'I am now moderating this group.'
+		return 'Agora eu estou moderando este grupo'
 
 	end,
 
-	['^/modrem[@'..bot.username..']*$'] = function(msg)
+	['^/modrem[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
 
 		if not config.moderation.admins[msg.from.id_str] then
 			return config.errors.not_admin
 		end
+
+		local moddat = load_data('moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
@@ -107,11 +169,17 @@ local commands = {
 
 		moddat[msg.chat.id_str] = nil
 		save_data('moderation.json', moddat)
-		return 'I am no longer moderating this group.'
+		return 'Eu não estou mais moderando este grupo'
 
 	end,
 
-	['^/modprom[@'..bot.username..']*$'] = function(msg)
+	['^/modprom[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
@@ -122,28 +190,38 @@ local commands = {
 		end
 
 		if not msg.reply_to_message then
-			return 'Promotions must be done via reply.'
+			return 'Promoções devem ser feitas através de menções'
 		end
 
 		local modid = tostring(msg.reply_to_message.from.id)
 		local modname = msg.reply_to_message.from.first_name
 
+		if msg.reply_to_message.from.username then
+			modname = modname .. ' (@' .. msg.reply_to_message.from.username .. ')'
+		end
+
 		if config.moderation.admins[modid] then
-			return modname .. ' is already an administrator.'
+			return modname .. ' já é um administrador'
 		end
 
 		if moddat[msg.chat.id_str][modid] then
-			return modname .. ' is already a moderator.'
+			return modname .. ' já é um moderador'
 		end
 
 		moddat[msg.chat.id_str][modid] = modname
 		save_data('moderation.json', moddat)
 
-		return modname .. ' is now a moderator.'
+		return modname .. ' é agora um moderador'
 
 	end,
 
-	['^/moddem[@'..bot.username..']*'] = function(msg)
+	['^/modreb[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
@@ -159,27 +237,104 @@ local commands = {
 			if msg.reply_to_message then
 				modid = tostring(msg.reply_to_message.from.id)
 			else
-				return 'Demotions must be done via reply or specification of a moderator\'s ID.'
+				return 'Rebaixamentos devem ser feitos por meio de menções ou especificando um ID dos moderadores'
 			end
 		end
 
 		if config.moderation.admins[modid] then
-			return config.moderation.admins[modid] .. ' is an administrator.'
+			return config.moderation.admins[modid] .. ' é um administrador'
 		end
 
 		if not moddat[msg.chat.id_str][modid] then
-			return 'User is not a moderator.'
+			return 'O usuário não é um moderador'
 		end
 
 		local modname = moddat[msg.chat.id_str][modid]
 		moddat[msg.chat.id_str][modid] = nil
 		save_data('moderation.json', moddat)
 
-		return modname .. ' is no longer a moderator.'
+		return modname .. ' não é mais um moderador'
 
 	end,
 
-	['/modkick[@'..bot.username..']*'] = function(msg)
+	['^/bemvindo[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('moderation.json')
+
+		if not moddat[msg.chat.id_str] then
+			return config.errors.moderation
+		end
+
+		bemvindo = moddat['bemvindo-' .. msg.chat.id_str]
+
+		if bemvindo == false then
+			moddat['bemvindo-' .. msg.chat.id_str] = true
+			save_data('moderation.json', moddat)
+			return 'As mensagens de \'Bem-vindo\' foram ativadas para este grupo!'
+		else
+			moddat['bemvindo-' .. msg.chat.id_str] = false
+			save_data('moderation.json', moddat)
+			return 'As mensagens de \'Bem-vindo\' foram desativadas para este grupo!'
+		end
+
+	end,
+
+	['^/regras[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('moderation.json')
+
+		message = moddat['regras' .. msg.chat.id_str]
+
+		if not message then
+			return 'Regras do grupo ainda não definidas!'
+		else
+			sendReply(msg, message .. '\n\nUse /modlista para ver os moderadores')
+		end
+
+		return nil
+
+	end,
+
+	['^/addregras[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('moderation.json')
+
+		local regras = msg.text:input()
+
+		if not regras then
+			if msg.reply_to_message then
+				regras = tostring(msg.reply_to_message.text)
+			else
+				return 'Regras devem ser adicionadas por meio de menções ou especificando um texto'
+			end
+		end
+
+		moddat['regras' .. msg.chat.id_str] = regras
+		save_data('moderation.json', moddat)
+
+		return 'As regras deste grupo foram definidas com sucesso!'
+
+	end,
+
+	['/kickar[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
@@ -200,20 +355,26 @@ local commands = {
 		end
 
 		if not userid then
-			return 'Kicks must be done via reply or specification of a user/bot\'s ID or username.'
+			return 'Kicks devem ser feitos por meio de menções, especificando um ID dos usuários/bots ou nome de usuário'
 		end
 
 		if moddat[msg.chat.id_str][userid] or config.moderation.admins[userid] then
-			return 'You cannot kick a moderator.'
+			return 'Você não pode kickar um moderador'
 		end
 
-		sendMessage(config.moderation.admin_group, '/kick ' .. userid .. ' from ' .. math.abs(msg.chat.id))
+		sendMessage(config.moderation.admin_group, '/kick ' .. userid .. ' de ' .. math.abs(msg.chat.id))
 
-		sendMessage(config.moderation.admin_group, usernm .. ' kicked from ' .. msg.chat.title .. ' by ' .. msg.from.first_name .. '.')
+		sendMessage(config.moderation.admin_group, usernm .. ' kickado de ' .. msg.chat.title .. ' por ' .. msg.from.first_name .. '.')
 
 	end,
 
-	['^/modban[@'..bot.username..']*'] = function(msg)
+	['^/banir[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
@@ -234,45 +395,20 @@ local commands = {
 		end
 
 		if not userid then
-			return 'Kicks must be done via reply or specification of a user/bot\'s ID or username.'
+			return 'Banimentos devem ser feitos por meio de menções, especificando um ID dos usuários/bots ou nome de usuário'
 		end
 
 		if moddat[msg.chat.id_str][userid] or config.moderation.admins[userid] then
-			return 'You cannot ban a moderator.'
+			return 'Você não pode banir um moderador'
 		end
 
-		sendMessage(config.moderation.admin_group, '/ban ' .. userid .. ' from ' .. math.abs(msg.chat.id))
+		sendMessage(config.moderation.admin_group, '/ban ' .. userid .. ' de ' .. math.abs(msg.chat.id))
 
-		sendMessage(config.moderation.admin_group, usernm .. ' banned from ' .. msg.chat.title .. ' by ' .. msg.from.first_name .. '.')
+		sendMessage(config.moderation.admin_group, usernm .. ' banido de ' .. msg.chat.title .. ' por ' .. msg.from.first_name .. '.')
 
 	end
 
 }
-
-if config.antisquig then
-	commands['[\216-\219][\128-\191]'] = function(msg)
-
-		if not moddat[msg.chat.id_str] then return true end
-		if config.moderation.admins[msg.from.id_str] then return true end
-		if moddat[msg.chat.id_str][msg.from.id_str] then return true end
-
-		if antisquig[msg.from.id] == true then
-			return
-		end
-		antisquig[msg.from.id] = true
-
-		sendReply(msg, config.errors.antisquig)
-		sendMessage(config.moderation.admin_group, '/kick ' .. msg.from.id .. ' from ' .. math.abs(msg.chat.id))
-		sendMessage(config.moderation.admin_group, 'ANTISQUIG: ' .. msg.from.first_name .. ' kicked from ' .. msg.chat.title .. '.')
-
-
-	end
-end
-
-local triggers = {}
-for k,v in pairs(commands) do
-	table.insert(triggers, k)
-end
 
 local action = function(msg)
 
@@ -288,22 +424,12 @@ local action = function(msg)
 		end
 	end
 
-	return true
-
-end
-
- -- When a user is kicked for squigglies, his ID is added to this table.
- -- That user will not be kicked again as long as his ID is in the table.
- -- The table is emptied every five seconds.
- -- Thus the bot will not spam the group or admin group when a user posts more than one infringing messages.
-local cron = function()
-
-	antisquig = {}
-
 end
 
 return {
 	action = action,
 	triggers = triggers,
-	cron = cron
+	doc = doc,
+	command = command,
+	command_id = command_id
 }

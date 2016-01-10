@@ -1,14 +1,14 @@
-local command = 'location <query>'
-local doc = [[```
-/location <query>
-Returns a location from Google Maps.
-Alias: /loc
-```]]
+local command_id = '14'
+local command = 'localizar'
+
+local doc = [[
+	/localizar <lugar>
+
+Retorna uma localização do Google Maps
+]]
 
 triggers = {
-	'^/location[@'..bot.username..']*',
-	'^/loc[@'..bot.username..']* ',
-	'^/loc[@'..bot.username..']*$'
+	'^/loc[alizar]*[@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -18,7 +18,7 @@ local action = function(msg)
 		if msg.reply_to_message and msg.reply_to_message.text then
 			input = msg.reply_to_message.text
 		else
-			sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+			sendReply(msg, doc)
 			return
 		end
 	end
@@ -37,5 +37,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

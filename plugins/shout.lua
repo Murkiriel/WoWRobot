@@ -1,11 +1,14 @@
-local command = 'shout <text>'
-local doc = [[```
-/shout <text>
-Shouts something.
-```]]
+local command_id = '9'
+local command = 'gritar'
+
+local doc = [[
+	/gritar <texto>
+
+Gritar alguma coisa!
+]]
 
 local triggers = {
-	'^/shout[@'..bot.username..']*'
+	'^/gritar[@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -13,7 +16,7 @@ local action = function(msg)
 	local input = msg.text:input()
 
 	if not input then
-		sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+		sendReply(msg, doc)
 		return
 	end
 	input = input:trim()
@@ -38,7 +41,7 @@ local action = function(msg)
 		output = output .. match .. ' ' .. spacing .. match .. '\n'
 	end
 	output = '```\n' .. output:trim() .. '\n```'
-	sendMessage(msg.chat.id, output, true, false, true)
+	sendMessage(msg.chat.id, output, true, msg.message_id, true)
 
 end
 
@@ -46,5 +49,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

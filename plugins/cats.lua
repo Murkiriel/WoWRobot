@@ -1,16 +1,24 @@
 if not config.thecatapi_key then
-	print('Missing config value: thecatapi_key.')
-	print('cats.lua will be enabled, but there are more features with a key.')
+	print('Valor de configuração ausente: thecatapi_key.')
+	print('cats.lua será habilitado, mas há mais recursos com uma chave')
 end
 
-local command = 'cat'
-local doc = '`Returns a cat!`'
+local command_id = '7'
+local command = 'gatos'
+
+local doc = [[
+	/gatos
+
+Retorna um gato!
+]]
 
 local triggers = {
-	'^/cat[@'..bot.username..']*$'
+	'^/gatos[@'..bot.username..']*'
 }
 
 local action = function(msg)
+
+	sendChatAction(msg.chat.id, 'upload_photo')
 
 	local url = 'http://thecatapi.com/api/images/get?format=html&type=jpg'
 	if config.thecatapi_key then
@@ -25,13 +33,19 @@ local action = function(msg)
 
 	str = str:match('<img src="(.*)">')
 
-	sendMessage(msg.chat.id, str)
+	strnome = str:gsub('/', '_')
 
+	os.execute('wget --user-agent="Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.3) Gecko/2008092416 Firefox/3.0.3" -c -O ' .. strnome .. ' ' .. str)
+
+	sendPhoto(msg.chat.id, config.root .. strnome, '😻',msg.message_id)
+
+	os.execute('rm ' .. strnome)
 end
 
 return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

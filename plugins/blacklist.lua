@@ -1,5 +1,5 @@
- -- This plugin will allow the admin to blacklist users who will be unable to
- -- use the bot. This plugin should be at the top of your plugin list in config.
+ -- Este plugin permite que o administrador barre usuários que não serão capazes de
+ -- usar o bot. Este plugin deve estar no topo da sua lista de plug-in na configuração
 
 local triggers = {
 	''
@@ -10,15 +10,15 @@ local triggers = {
 	local blacklist = load_data('blacklist.json')
 
 	if blacklist[msg.from.id_str] then
-		return -- End if the sender is blacklisted.
+		return -- Fim se o remetente está na lista negra.
 	end
 
-	if not string.match(msg.text_lower, '^/blacklist') then
+	if not string.match(msg.text_lower, '^/listanegra') then
 		return true
 	end
 
 	if msg.from.id ~= config.admin then
-		return -- End if the user isn't admin.
+		return -- Fim se o usuário não é admin
 	end
 
 	local input = msg.text:input()
@@ -26,17 +26,17 @@ local triggers = {
 		if msg.reply_to_message then
 			input = tostring(msg.reply_to_message.from.id)
 		else
-			sendReply(msg, 'You must use this command via reply or by specifying a user\'s ID.')
+			sendReply(msg, 'Você deve usar este comando através de menções ou especificando um ID de usuário')
 			return
 		end
 	end
 
 	if blacklist[input] then
 		blacklist[input] = nil
-		sendReply(msg, input .. ' has been removed from the blacklist.')
+		sendReply(msg, input .. ' foi removido da lista negra')
 	else
 		blacklist[input] = true
-		sendReply(msg, input .. ' has been added to the blacklist.')
+		sendReply(msg, input .. ' foi adicionado à lista negra')
 	end
 
 	save_data('blacklist.json', blacklist)

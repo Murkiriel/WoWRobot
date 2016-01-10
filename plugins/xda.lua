@@ -1,14 +1,14 @@
-local command_id = '8'
-local command = 'google'
+local command_id = '19'
+local command = 'xda'
 
 local doc = [[
-	/google <texto>
+	/xda <texto>
 
-Retorna 6 (caso seja grupo) ou 8 (caso seja privado) resultos do Google. Safe search é habilitada por padrão, use "/googlex" para desativá-lo
+Retorna 6 (caso seja grupo) ou 8 (caso seja privado) resultos do XDA
 ]]
 
 local triggers = {
-	'^/g[oogle]*[ooglex][@'..bot.username..']*'
+	'^/xda[@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -31,11 +31,7 @@ local action = function(msg)
 		url = url .. '&rsz=6'
 	end
 
-	if not string.match(msg.text, '^/g[oogle]*ooglex') then
-		url = url .. '&safe=active'
-	end
-
-	url = url .. '&q=' .. URL.escape(input)
+	url = url .. '&q=site:http://forum.xda-developers.com+' .. URL.escape(input)
 
 	local jstr, res = HTTPS.request(url)
 	if res ~= 200 then

@@ -1,16 +1,14 @@
- -- Thanks to @TiagoDanin for writing the original plugin.
+local command_id = '20'
+local command = 'youtube'
 
-local command = 'youtube <query>'
-local doc = [[```
-/youtube <query>
-Returns the top result from YouTube.
-Alias: /yt
-```]]
+local doc = [[
+	/youtube <texto>
+
+Retorna 6 (caso seja grupo) ou 8 (caso seja privado) resultos do Youtube
+]]
 
 local triggers = {
-	'^/youtube[@'..bot.username..']*',
-	'^/yt[@'..bot.username..']*$',
-	'^/yt[@'..bot.username..']* '
+	'^/y[ou]*t[ube][@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -20,12 +18,20 @@ local action = function(msg)
 		if msg.reply_to_message and msg.reply_to_message.text then
 			input = msg.reply_to_message.text
 		else
-			sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+			sendReply(msg, doc)
 			return
 		end
 	end
 
-	local url = 'https://www.googleapis.com/youtube/v3/search?key=AIzaSyAfe7SI8kwQqaoouvAmevBfKumaLf-3HzI&type=video&part=snippet&maxResults=1&q=' .. URL.escape(input)
+	local url = 'https://ajax.googleapis.com/ajax/services/search/web?v=1.0'
+
+	if msg.from.id == msg.chat.id then
+		url = url .. '&rsz=8'
+	else
+		url = url .. '&rsz=6'
+	end
+
+	url = url .. '&q=site:https://www.youtube.com/watch+' .. URL.escape(input)
 
 	local jstr, res = HTTPS.request(url)
 	if res ~= 200 then
@@ -34,10 +40,18 @@ local action = function(msg)
 	end
 
 	local jdat = JSON.decode(jstr)
+	if #jdat.responseData.results < 1 then
+		sendReply(msg, config.errors.results)
+		return
+	end
 
-	local message = 'https://www.youtube.com/watch?v=' .. jdat.items[1].id.videoId
+	local message = ''
+	for i,v in ipairs(jdat.responseData.results) do
+		jdat.responseData.results[i].titleNoFormatting = jdat.responseData.results[i].titleNoFormatting:gsub(']', '')
+		message = message .. i .. ') [' .. jdat.responseData.results[i].titleNoFormatting .. ']' .. '(' .. jdat.responseData.results[i].unescapedUrl .. ')' .. '\n\n'
+	end
 
-	sendMessage(msg.chat.id, message, false, msg.message_id)
+	sendMessage(msg.chat.id, message, true, msg.message_id, true)
 
 end
 
@@ -45,5 +59,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

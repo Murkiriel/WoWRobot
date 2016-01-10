@@ -1,7 +1,7 @@
 -- utilities.lua
--- Functions shared among plugins.
+-- Funções compartilhadas entre plugins
 
-function get_word(s, i) -- get the indexed word in a string
+function get_word(s, i) -- Obter a palavra indexada em uma string
 
 	s = s or ''
 	i = i or 1
@@ -15,15 +15,15 @@ function get_word(s, i) -- get the indexed word in a string
 
 end
 
-function string:input() -- Returns the string after the first space.
+function string:input() -- Retorna a string após o primeiro espaço
 	if not self:find(' ') then
 		return false
 	end
 	return self:sub(self:find(' ')+1)
 end
 
- -- I swear, I copied this from PIL, not yago! :)
-function string:trim() -- Trims whitespace from a string.
+ -- Eu juro, eu copiei isso de PIL, não do Yago! :)
+function string:trim() -- Apara espaços em branco a partir de uma string
 	local s = self:gsub('^%s*(.-)%s*$', '%1')
 	return s
 end
@@ -57,14 +57,14 @@ local lc_list = {
 	['!'] = 'ǃ'
 }
 
-function latcyr(str) -- Replaces letters with corresponding Cyrillic characters.
+function latcyr(str) -- Substitui letras com seus correspondentes caracteres Cyrillic
 	for k,v in pairs(lc_list) do
 		str = string.gsub(str, k, v)
 	end
 	return str
 end
 
-function load_data(filename) -- Loads a JSON file as a table.
+function load_data(filename) -- Carrega um arquivo JSON como uma tabela
 
 	local f = io.open(filename)
 	if not f then
@@ -78,7 +78,7 @@ function load_data(filename) -- Loads a JSON file as a table.
 
 end
 
-function save_data(filename, data) -- Saves a table to a JSON file.
+function save_data(filename, data) -- Salva uma tabela para um arquivo JSON
 
 	local s = JSON.encode(data)
 	local f = io.open(filename, 'w')
@@ -87,7 +87,7 @@ function save_data(filename, data) -- Saves a table to a JSON file.
 
 end
 
- -- Gets coordinates for a location. Used by gMaps.lua, time.lua, weather.lua.
+ -- Obtém coordenadas para um local. Usado por gMaps.lua, time.lua, weather.lua
 function get_coords(input)
 
 	local url = 'http://maps.googleapis.com/maps/api/geocode/json?address=' .. URL.escape(input)

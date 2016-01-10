@@ -1,50 +1,48 @@
- -- This plugin should go at the end of your plugin list in
- -- config.lua, but not after greetings.lua.
+ -- Este plugin deve ir no final de sua lista de plugin no
+ -- config.lua, mas não depois greetings.lua
 
-local help_text = '*Available commands:*'
+local help_text = '*Comandos disponíveis:*\n'
 
 for i,v in ipairs(plugins) do
-	if v.command then
-		help_text = help_text .. '\n /' .. v.command:gsub('%[', '\\[')
+	if v.command_id then
+		help_text = help_text .. '\n' .. v.command_id:gsub('%[', '\\[') .. ' - /' .. v.command:gsub('%[', '\\[')
 	end
 end
 
-help_text = help_text .. [[\n
- /help <command>
-Arguments: <required> \[optional]
-]]
+help_text = help_text .. '\n\n/ajuda <número>'
 
 local triggers = {
-	'^/help[@'..bot.username..']*',
-	'^/h[@'..bot.username..']*$',
-	'^/start[@'..bot.username..']*'
+	'^/start[@'..bot.username..']*',
+	'^/iniciar[@'..bot.username..']*',
+	'^/ajuda[@'..bot.username..']*',
+	'^/help[@'..bot.username..']*'
 }
 
 local action = function(msg)
 
 	local input = msg.text_lower:input()
 
-	-- Attempts to send the help message via PM.
-	-- If msg is from a group, it tells the group whether the PM was successful.
+	-- As tentativas de enviar a mensagem de ajuda no privado
+	-- Se a mensagem é de um grupo, ele diz ao grupo se a mensagem no privado foi bem sucedida
 	if not input then
-		local res = sendMessage(msg.from.id, help_text, true, nil, true)
-		if not res then
-			sendReply(msg, 'Please message me privately for a list of commands.')
+		local res = sendMessage(msg.chat.id, help_text, true, msg.message_id, true)
+		--[[if not res then
+			sendReply(msg, 'Por favor mande uma mensagem no meu privado para uma lista de comandos')
 		elseif msg.chat.type ~= 'private' then
-			sendReply(msg, 'I have sent you the requested information in a private message.')
-		end
+			sendReply(msg, 'Enviei as informações solicitadas em uma mensagem privada')
+		end]]
 		return
 	end
 
 	for i,v in ipairs(plugins) do
-		if v.command and get_word(v.command, 1) == input and v.doc then
-			local output = '*Help for* _' .. get_word(v.command, 1) .. '_ *:*\n' .. v.doc
-			sendMessage(msg.chat.id, output, true, nil, true)
+		if v.command_id and get_word(v.command_id, 1) == input and v.doc then
+			local output = v.doc
+			sendMessage(msg.chat.id, output, true, msg.message_id, true)
 			return
 		end
 	end
 
-	sendReply(msg, 'Sorry, there is no help for that command.')
+	sendReply(msg, 'Desculpe, não há nenhuma ajuda para esse comando')
 
 end
 

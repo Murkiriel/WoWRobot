@@ -1,23 +1,23 @@
- -- Put this absolutely at the end, even after greetings.lua.
+-- Colocar esta absolutamente no final, mesmo após greetings.lua
 
 local triggers = {
-	'',
-	'^' .. bot.first_name .. ',',
-	'^@' .. bot.username .. ','
+	''
 }
 
 local action = function(msg)
 
+	msg.text = string.lower(msg.text)
+	palavrachave, j = string.find(msg.text, 'wow')
+
 	if msg.text == '' then return end
 
-	-- This is awkward, but if you have a better way, please share.
-	if msg.text_lower:match('^' .. bot.first_name .. ',') then
-	elseif msg.text_lower:match('^@' .. bot.username .. ',') then
-	elseif msg.text:match('^/') then
-		return true
-	-- Uncomment the following line for Al Gore-like reply chatter.
-	-- elseif msg.reply_to_message and msg.reply_to_message.from.id == bot.id then
+	-- Isso é estranho, mas se você tiver uma maneira melhor, por favor, compartilhe
+	if msg.text_lower:match('^' .. bot.first_name) then
+	elseif msg.text_lower:match('^@' .. bot.username) then
+	elseif msg.text:match('^/') then return true
+	elseif msg.reply_to_message and msg.reply_to_message.from.id == bot.id then
 	elseif msg.from.id == msg.chat.id then
+	elseif palavrachave ~= nil then
 	else
 		return true
 	end
@@ -25,25 +25,64 @@ local action = function(msg)
 	sendChatAction(msg.chat.id, 'typing')
 
 	local input = msg.text_lower
-	input = input:gsub(bot.first_name, 'simsimi')
-	input = input:gsub('@'..bot.username, 'simsimi')
+	input = input:gsub('wow', 'ed')
+	input = input:gsub('@'..bot.username, 'ed')
 
-	local url = 'http://www.simsimi.com/requestChat?lc=en&ft=1.0&req=' .. URL.escape(input)
+	local url = 'http://www.ed.conpet.gov.br/mod_perl/bot_gateway.cgi?server=0.0.0.0:8085&pure=1&js=1&msg=' .. URL.escape(input)
 
-	local jstr, res = HTTP.request(url)
+	local t, res = HTTP.request(url)
+
 	if res ~= 200 then
-		sendMessage(msg.chat.id, config.errors.chatter_connection)
+		sendReply(msg, config.errors.chatter_response)
 		return
 	end
 
-	local jdat = JSON.decode(jstr)
-	local message = jdat.res.msg
+	local cleaner = {
+		{ "&amp;", "&" },
+		{ "&#151;", "-" },
+		{ "&#146;", "'" },
+		{ "&#147;", "\"" },
+		{ "&#148;", "\"" },
+		{ "&#150;", "-" },
+		{ "&#160;", " " },
+		{ "<br ?/?>", "\n" },
+		{ "</p>", "\n" },
+		{ "(%b<>)", "" },
+		{ "\r", "\n" },
+		{ "[\n\n]+", "\n" },
+		{ "^\n*", "" },
+		{ "\n*$", "" },
+	}
+
+	for i=1, #cleaner do
+		local cleans = cleaner[i]
+		t = string.gsub(t, cleans[1], cleans[2])
+	end
+
+	t=t:gsub('<a.->(.-)</a>','')
+	t=t:gsub('<a href="#','')
+
+	local resposta = t
+
+	-- # ÍNICIO DO QUE VOCÊ DEVE MODIFICAR
+	var1, j = string.find(resposta, 'Kyr')  -- # Procura certas palavras-chave na resposta
+	var2, j = string.find(resposta, 'CONPET')  -- # Procura certas palavras-chave na resposta
+
+	if var1 ~= nil or var2 ~= nil then  -- # Se a palavra-chave existir faça isso abaixo
+		resposta = 'Nem sei sobre isso :P' -- # Troca a resposta pelo que você quiser
+	end
+
+	resposta = string.gsub(resposta, 'Robô', '') -- # Remove o nome 'Robô'
+	resposta = string.gsub(resposta, 'Ed', 'WoW') -- # Troca o nome 'Ed ' por 'WoW'. Altere 'WoW' para o que desejar
+	-- # FIM DO QUE VOCÊ DEVE MODIFICAR
+
+	local message = resposta
 
 	if message:match('^I HAVE NO RESPONSE.') then
 		message = config.errors.chatter_response
 	end
 
-	-- Let's clean up the response a little. Capitalization & punctuation.
+	-- Vamos limpar a resposta um pouco (mais). Capitalização e pontuação
 	local filter = {
 		['%aimi?%aimi?'] = bot.first_name,
 		['^%s*(.-)%s*$'] = '%1',
@@ -59,11 +98,12 @@ local action = function(msg)
 		message = message .. '.'
 	end
 
-	sendMessage(msg.chat.id, message)
+	sendReply(msg, message)
 
 end
 
 return {
 	action = action,
-	triggers = triggers
+	triggers = triggers,
+	doc = doc
 }

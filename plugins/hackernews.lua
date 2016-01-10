@@ -1,8 +1,11 @@
+local command_id = '10'
 local command = 'hackernews'
-local doc = [[```
-Returns four (if group) or eight (if private message) top stories from Hacker News.
-Alias: /hn
-```]]
+
+local doc = [[
+	/hackernews
+
+Retorna 6 (caso seja grupo) ou 8 (caso seja privado) as principais notícias do Hacker News.
+]]
 
 local triggers = {
 	'^/hackernews[@'..bot.username..']*',
@@ -21,12 +24,12 @@ local action = function(msg)
 
 	local jdat = JSON.decode(jstr)
 
-	local res_count = 4
+	local res_count = 6
 	if msg.chat.id == msg.from.id then
 		res_count = 8
 	end
 
-	local output = '*Hacker News:*\n'
+	local message = ''
 	for i = 1, res_count do
 		local res_url = 'https://hacker-news.firebaseio.com/v0/item/' .. jdat[i] .. '.json'
 		jstr, res = HTTPS.request(res_url)
@@ -35,20 +38,10 @@ local action = function(msg)
 			return
 		end
 		local res_jdat = JSON.decode(jstr)
-		local title = res_jdat.title:gsub('%[.+%]', ''):gsub('%(.+%)', ''):gsub('&amp;', '&')
-		if title:len() > 48 then
-			title = title:sub(1, 45) .. '...'
-		end
-		local url = res_jdat.url
-		if url:find('%(') then
-			output = output .. '• ' .. title .. '\n' .. url:gsub('_', '\\_') .. '\n'
-		else
-			output = output .. '• [' .. title .. '](' .. url .. ')\n'
-		end
-
+		message = message .. i .. ') [' .. res_jdat.title .. '](' .. res_jdat.url .. ')\n\n'
 	end
 
-	sendMessage(msg.chat.id, output, true, nil, true)
+	sendMessage(msg.chat.id, message, true, msg.message_id, true)
 
 end
 
@@ -56,5 +49,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

@@ -1,7 +1,7 @@
- -- Put this on the bottom of your plugin list, after help.lua.
+ -- Colocar este na parte inferior da sua lista de plugins, após help.lua.
 
 local triggers = {
-	bot.first_name .. '%p?$'
+	''
 }
 
 local action = function(msg)
@@ -12,8 +12,8 @@ local action = function(msg)
 
 	for k,v in pairs(config.greetings) do
 		for key,val in pairs(v) do
-			if msg.text_lower:match(val..',? '..bot.first_name) then
-				sendMessage(msg.chat.id, latcyr(k:gsub('#NAME', nick)))
+			if msg.text_lower:match(val) then
+				sendReply(msg, latcyr(k:gsub('#NAME', nick)))
 				return
 			end
 		end

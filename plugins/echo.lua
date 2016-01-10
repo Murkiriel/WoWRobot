@@ -1,11 +1,14 @@
-local command = 'echo <text>'
-local doc = [[```
-/echo <text>
-Repeats a string of text.
-```]]
+local command_id = '5'
+local command = 'diga'
+
+local doc = [[
+	/diga <texto>
+
+Repita a sequência do texto!
+]]
 
 local triggers = {
-	'^/echo[@'..bot.username..']*'
+	'^/diga[@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -13,9 +16,9 @@ local action = function(msg)
 	local input = msg.text:input()
 
 	if input then
-		sendMessage(msg.chat.id, latcyr(input))
+		sendReply(msg, latcyr(input))
 	else
-		sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+		sendReply(msg, doc)
 	end
 
 end
@@ -24,5 +27,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

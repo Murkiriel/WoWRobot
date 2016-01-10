@@ -1,11 +1,14 @@
-local command = 'whoami'
-local doc = [[```
-Returns user and chat info for you or the replied-to message.
-Alias: /who
-```]]
+local command_id = '12'
+local command = 'id'
+
+local doc = [[
+	/id
+
+Obter informações sobre mim
+]]
 
 local triggers = {
-	'^/who[ami]*[@'..bot.username..']*$'
+	'^/id[@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -14,27 +17,28 @@ local action = function(msg)
 		msg = msg.reply_to_message
 	end
 
-	local from_name = msg.from.first_name
+	local from_name = 'Seu nome é ' .. msg.from.first_name
 	if msg.from.last_name then
 		from_name = from_name .. ' ' .. msg.from.last_name
 	end
-	if msg.from.username then
-		from_name = '@' .. msg.from.username .. ', AKA ' .. from_name
-	end
-	from_name = from_name .. ' (' .. msg.from.id .. ')'
-
-	local to_name
-	if msg.chat.title then
-		to_name = msg.chat.title .. ' (' .. math.abs(msg.chat.id) .. ').'
-	else
-		to_name = '@' .. bot.username .. ', AKA ' .. bot.first_name .. ' (' .. bot.id .. ').'
-	end
-
-	local message = 'You are ' .. from_name .. ' and you are messaging ' .. to_name
 
 	local nicks = load_data('nicknames.json')
 	if nicks[msg.from.id_str] then
-		message = message .. '\nYour nickname is ' .. nicks[msg.from.id_str] .. '.'
+		from_name = from_name .. ', apelidado de ' .. nicks[msg.from.id_str]
+	end
+
+	if msg.from.username then
+		from_name = from_name .. '\nUsuário: @' .. msg.from.username
+	end
+	from_name = from_name .. '\nID: ' .. msg.from.id
+
+	local to_name
+	local message
+	if msg.chat.title then
+		to_name = msg.chat.title .. ' (ID: ' .. math.abs(msg.chat.id) .. ')'
+		message = from_name .. '\n\nVocê está no Grupo ' .. to_name .. '!'
+	else
+		message = from_name .. '\n\nVocê está no meu privado!'
 	end
 
 	sendReply(msg, message)
@@ -45,5 +49,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

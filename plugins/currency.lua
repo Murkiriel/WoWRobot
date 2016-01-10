@@ -1,25 +1,28 @@
-local command = 'cash [amount] <from> to <to>'
-local doc = [[```
-/cash [amount] <from> to <to>
-Example: /cash 5 USD to EUR
-Returns exchange rates for various currencies.
-```]]
+local command_id = '6'
+local command = 'dinheiro'
+
+local doc = [[
+	/dinheiro quantidade <DE> para <PARA>
+
+Ex.: /dinheiro 10 USD para BRL
+Retorna as taxas de câmbio para várias moedas
+]]
 
 local triggers = {
-	'^/cash[@'..bot.username..']*'
+	'^/dinheiro[@'..bot.username..']*'
 }
 
 local action = function(msg)
 
 	local input = msg.text:upper()
-	if not input:match('%a%a%a TO %a%a%a') then
-		sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+	if not input:match('%a%a%a PARA %a%a%a') then
+		sendReply(msg, doc)
 		return
 	end
 
-	local from = input:match('(%a%a%a) TO')
-	local to = input:match('TO (%a%a%a)')
-	local amount = input:match('([%d]+) %a%a%a TO %a%a%a') or 1
+	local from = input:match('(%a%a%a) PARA')
+	local to = input:match('PARA (%a%a%a)')
+	local amount = input:match('([%d]+) %a%a%a PARA %a%a%a') or 1
 	local result = 1
 
 	local url = 'https://www.google.com/finance/converter'
@@ -43,11 +46,8 @@ local action = function(msg)
 
 	end
 
-	local output = amount .. ' ' .. from .. ' = ' .. result .. ' ' .. to .. '\n'
-	output = output .. os.date('!%F %T UTC')
-	output = '`' .. output .. '`'
-
-	sendMessage(msg.chat.id, output, true, nil, true)
+	local message = amount .. ' ' .. from .. ' = ' .. result .. ' ' .. to
+	sendReply(msg, message)
 
 end
 
@@ -55,5 +55,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

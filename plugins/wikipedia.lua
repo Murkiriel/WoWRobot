@@ -1,15 +1,14 @@
-local command = 'wikipedia <query>'
-local doc = [[```
-/wikipedia <query>
-Returns an article from Wikipedia.
-Aliases: /w, /wiki
-```]]
+local command_id = '18'
+local command = 'wikipedia'
+
+local doc = [[
+	/wikipedia <pesquisa>
+
+Retorna um artigo da Wikipedia
+]]
 
 local triggers = {
-	'^/wikipedia[@'..bot.username..']*',
-	'^/wiki[@'..bot.username..']*',
-	'^/w[@'..bot.username..']*$',
-	'^/w[@'..bot.username..']* '
+	'^/w[ikipedia][@'..bot.username..']*',
 }
 
 local action = function(msg)
@@ -19,14 +18,14 @@ local action = function(msg)
 		if msg.reply_to_message and msg.reply_to_message.text then
 			input = msg.reply_to_message.text
 		else
-			sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+			sendReply(msg, doc)
 			return
 		end
 	end
 
 	local gurl = 'https://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=1&q=site:wikipedia.org%20'
-	local wurl = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exchars=4000&exsectionformat=plain&titles='
-
+	--local wurl = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exchars=4000&exsectionformat=plain&titles='
+	local wurl = 'https://pt.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exchars=4000&exsectionformat=plain&explaintext=&redirects=&titles='
 	local jstr, res = HTTPS.request(gurl .. URL.escape(input))
 	if res ~= 200 then
 		sendReply(msg, config.errors.connection)
@@ -34,10 +33,6 @@ local action = function(msg)
 	end
 
 	local jdat = JSON.decode(jstr)
-	if not jdat.responseData then
-		sendReply(msg, config.errors.connection)
-		return
-	end
 	if not jdat.responseData.results[1] then
 		sendReply(msg, config.errors.results)
 		return
@@ -55,7 +50,7 @@ local action = function(msg)
 	local text = JSON.decode(jstr).query.pages
 	for k,v in pairs(text) do
 		text = v.extract
-		break -- Seriously, there's probably a way more elegant solution.
+		break -- Sério, há provavelmente uma solução mais elegante
 	end
 	if not text then
 		sendReply(msg, config.errors.results)
@@ -67,18 +62,10 @@ local action = function(msg)
 	if l then
 		text = text:sub(1, l-1)
 	end
+	url = url:gsub('https://en.', 'https://pt.')
+	text = text .. '\n\n' .. url
 
-	title = title:gsub('%(.+%)', '')
-	--local output = '[' .. title .. '](' .. url .. ')\n' .. text:gsub('%[.+]%','')
-	--local output = '*' .. title .. '*\n' .. text:gsub('%[.+]%','') .. '\n[Read more.](' .. url .. ')'
-	local output = text:gsub('%[.+%]',''):gsub(title, '*'..title..'*') .. '\n'
-	if url:find('%(') then
-		output = output .. url:gsub('_', '\\_')
-	else
-		output = output .. '[Read more.](' .. url .. ')'
-	end
-
-	sendMessage(msg.chat.id, output, true, nil, true)
+	sendReply(msg, text)
 
 end
 
@@ -86,5 +73,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command
+	command = command,
+	command_id = command_id
 }

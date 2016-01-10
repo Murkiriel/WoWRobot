@@ -1,5 +1,5 @@
 return {
-	bot_api_key = '',
+	bot_api_key = '', -- # TOKEN DO SEU BOT
 	google_api_key = '',
 	google_cse_key = '',
 	lastfm_api_key = '',
@@ -7,98 +7,82 @@ return {
 	biblia_api_key = '',
 	thecatapi_key = '',
 	time_offset = 0,
-	lang = 'en',
+	lang = 'pt', -- # SEU IDIOMA
 	cli_port = 4567,
-	admin = 00000000,
-	admin_name = 'John Smith',
-	about_text = [[
-I am otouto, the plugin-wielding, multi-purpose Telegram bot written by topkecleon.
+	admin = 00000000, -- # SEU ID AQUI
+	admin_name = '', -- # SEU NOME AQUI
+	about_text = '',
+	root = '', -- # PASTA DE INSTALAÇÃO DO BOT
 
-Send /help to get started.
-
-Join my channel for news about updates!
-telegram.me/otouto
-]]	,
 	errors = {
-		connection = 'Connection error.',
-		results = 'No results found.',
-		argument = 'Invalid argument.',
-		syntax = 'Invalid syntax.',
-		antisquig = 'This group is English only.',
-		moderation = 'I do not moderate this group.',
-		not_mod = 'This command must be run by a moderator.',
-		not_admin = 'This command must be run by an administrator.',
-		chatter_connection = 'I don\'t feel like talking right now.',
-		chatter_response = 'I don\'t know what to say to that.'
+		connection	   = 'Erro de conexão.',
+		results		   = 'Nenhum resultado encontrado.',
+		argument	   = 'Argumento inválido.',
+		syntax		   = 'Sintaxe inválida.',
+		antisquig	   = 'Este grupo é apenas em Português.',
+		moderation	   = 'Eu não modero este grupo.',
+		not_mod		   = 'Este comando deve ser executado por um moderador.',
+		not_admin	   = 'Este comando deve ser executado por um administrador.',
+		chatter_connection = 'Eu não me sinto com vontade de falar agora.',
+		chatter_response   = 'Eu não sei o que dizer sobre isso.'
 	},
 	greetings = {
-		['Hello, #NAME.'] = {
-			'hello',
-			'hey',
-			'sup',
-			'hi',
-			'good morning',
-			'good day',
-			'good afternoon',
-			'good evening'
+		['Olá, #NAME'] = {
+			'olá',
+			'ei',
+			'oi',
+			'bom dia',
+			'bom tarde',
+			'boa noite',
+			'boa madrugada'
 		},
-		['Goodbye, #NAME.'] = {
-			'bye',
-			'later',
-			'see ya',
-			'good night'
+		['Adeus, #NAME'] = {
+			'adeus',
+			'até logo'
 		},
-		['Welcome back, #NAME.'] = {
-			'i\'m home',
-			'i\'m back'
+		['Bem vindo de volta, #NAME'] = {
+			'Estou em casa',
+			'estou de volta'
 		},
-		['You\'re welcome, #NAME.'] = {
-			'thanks',
-			'thank you'
+		['De nada, #NAME'] = {
+			'obrigado'
 		}
 	},
 	moderation = {
 		admins = {
-			['00000000'] = 'You'
+			['000000'] = '' -- # ID E NOME DOS ADMINISTADORES
 		},
-		admin_group = -00000000,
-		realm_name = 'My Realm'
+		admin_group = -000000, -- # ID DO GRUPO DOS ADMINISTADORES
+		realm_name = '' -- # NOME DO GRUPO DOS ADMINISTADORES
 	},
 	plugins = {
+		'moderation.lua',
 		'blacklist.lua',
 		'floodcontrol.lua',
 		'control.lua',
 		'about.lua',
-		'ping.lua',
-		'whoami.lua',
 		'nick.lua',
-		'echo.lua',
-		'gSearch.lua',
-		'gImages.lua',
-		'gMaps.lua',
-		'youtube.lua',
-		'wikipedia.lua',
-		'hackernews.lua',
-		'imdb.lua',
 		'calc.lua',
-		'urbandictionary.lua',
-		'time.lua',
-		'eightball.lua',
-		'reactions.lua',
-		'dice.lua',
-		'reddit.lua',
-		'xkcd.lua',
-		'slap.lua',
-		'commit.lua',
-		'pun.lua',
-		'pokedex.lua',
-		'bandersnatch.lua',
+		'convidar.lua',
+		'echo.lua',
 		'currency.lua',
 		'cats.lua',
-		'hearthstone.lua',
+		'gSearch.lua',
 		'shout.lua',
-		-- Put new plugins here.
+		'hackernews.lua',
+		'time.lua',
+		'whoami.lua',
+		'imdb.lua',
+		'gMaps.lua',
+		'ping.lua',
+		'pokedex.lua',
+		'reddit.lua',
+		'wikipedia.lua',
+		'xda.lua',
+		'youtube.lua',
+		-- Colocar novos plugins aqui
 		'help.lua',
-		'greetings.lua'
+		--'greetings.lua',
+		'chatter.lua'
 	}
 }

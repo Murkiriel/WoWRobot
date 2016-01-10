@@ -1,8 +1,11 @@
-local command = 'calc <expression>'
-local doc = [[```
-/calc <expression>
-Returns solutions to mathematical expressions and conversions between common units. Results provided by mathjs.org.
-```]]
+local command_id = '3'
+local command = 'calc'
+
+local doc = [[
+	/calc <expressão>
+
+Retorna soluções para expressões matemáticas e as conversões entre unidades comuns. Resultados fornecidos pelo mathjs.org
+]]
 
 local triggers = {
 	'^/calc[@'..bot.username..']*'
@@ -15,28 +18,27 @@ local action = function(msg)
 		if msg.reply_to_message and msg.reply_to_message.text then
 			input = msg.reply_to_message.text
 		else
-			sendMessage(msg.chat.id, doc, true, msg.message_id, true)
+			sendReply(msg, doc)
 			return
 		end
 	end
 
 	local url = 'https://api.mathjs.org/v1/?expr=' .. URL.escape(input)
 
-	local output = HTTPS.request(url)
-	if not output then
+	local ans, res = HTTPS.request(url)
+	if not ans then
 		sendReply(msg, config.errors.connection)
 		return
 	end
 
-	output = '`' .. output .. '`'
-
-	sendMessage(msg.chat.id, output, true, msg.message_id, true)
+	sendReply(msg, ans)
 
 end
 
 return {
 	action = action,
 	triggers = triggers,
+	doc = doc,
 	command = command,
-	doc = doc
+	command_id = command_id
 }

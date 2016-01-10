@@ -1,14 +1,26 @@
- -- Actually the simplest plugin ever!
+ -- Na verdade o mais simples plugin desde sempre!
+
+local command_id = '15'
+local command = 'ping'
+
+local doc = [[
+	/ping
+
+Pong!
+]]
 
 local triggers = {
 	'^/ping[@'..bot.username..']*'
 }
 
 local action = function(msg)
-	sendMessage(msg.chat.id, 'Pong!')
+	sendReply(msg, 'Pong!')
 end
 
 return {
 	action = action,
-	triggers = triggers
+	triggers = triggers,
+	doc = doc,
+	command = command,
+	command_id = command_id
 }

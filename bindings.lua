@@ -1,7 +1,7 @@
 local BASE_URL = 'https://api.telegram.org/bot' .. config.bot_api_key
 
 if not config.bot_api_key then
-	error('You did not set your bot token in config.lua!')
+	error('Você não definiu seu token bot no config.lua!')
 end
 
 sendRequest = function(url)
@@ -67,7 +67,7 @@ sendReply = function(msg, text)
 end
 
 sendChatAction = function(chat_id, action)
- -- Support actions are typing, upload_photo, record_video, upload_video, record_audio, upload_audio, upload_document, find_location
+ -- Ações suportadas são typing, upload_photo, record_video, upload_video, record_audio, upload_audio, upload_document, find_location
 
 	local url = BASE_URL .. '/sendChatAction?chat_id=' .. chat_id .. '&action=' .. action
 	return sendRequest(url)
@@ -95,9 +95,15 @@ forwardMessage = function(chat_id, from_chat_id, message_id)
 end
 
 curlRequest = function(curl_command)
- -- Use at your own risk. Will not check for success.
 
-	io.popen(curl_command)
+	local dat = io.popen(curl_command):read('*all')
+	local tab = JSON.decode(dat)
+
+	if not tab.ok then
+		return false, tab.description
+	end
+
+	return tab
 
 end
 
