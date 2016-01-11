@@ -25,8 +25,8 @@ local action = function(msg)
 	sendChatAction(msg.chat.id, 'typing')
 
 	local input = msg.text_lower
+	input = input:gsub('@' .. bot.username, 'ed')
 	input = input:gsub('wow', 'ed')
-	input = input:gsub('@'..bot.username, 'ed')
 
 	local url = 'http://www.ed.conpet.gov.br/mod_perl/bot_gateway.cgi?server=0.0.0.0:8085&pure=1&js=1&msg=' .. URL.escape(input)
 
@@ -73,7 +73,8 @@ local action = function(msg)
 	end
 
 	resposta = string.gsub(resposta, 'Robô', '') -- # Remove o nome 'Robô'
-	resposta = string.gsub(resposta, 'Ed', 'WoW') -- # Troca o nome 'Ed ' por 'WoW'. Altere 'WoW' para o que desejar
+	resposta = string.gsub(resposta, 'Ed ', 'WoW ') -- # Troca o nome 'Ed ' por 'WoW'. Altere 'WoW' para o que desejar
+	resposta = string.gsub(resposta, 'Ed.', 'WoW.') -- # Troca o nome 'Ed ' por 'WoW'. Altere 'WoW' para o que desejar
 	-- # FIM DO QUE VOCÊ DEVE MODIFICAR
 
 	local message = resposta

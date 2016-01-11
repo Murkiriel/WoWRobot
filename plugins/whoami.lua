@@ -1,4 +1,4 @@
-local command_id = '12'
+local command_id = '11'
 local command = 'id'
 
 local doc = [[
@@ -36,7 +36,7 @@ local action = function(msg)
 	local message
 	if msg.chat.title then
 		to_name = msg.chat.title .. ' (ID: ' .. math.abs(msg.chat.id) .. ')'
-		message = from_name .. '\n\nVocê está no Grupo ' .. to_name .. '!'
+		message = from_name .. '\n\nVocê está no Grupo ' .. to_name
 	else
 		message = from_name .. '\n\nVocê está no meu privado!'
 	end

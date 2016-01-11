@@ -1,4 +1,4 @@
-local command_id = '16'
+local command_id = '15'
 local command = 'pokedex'
 
 local doc = [[

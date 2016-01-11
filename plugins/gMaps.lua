@@ -1,4 +1,4 @@
-local command_id = '14'
+local command_id = '13'
 local command = 'localizar'
 
 local doc = [[

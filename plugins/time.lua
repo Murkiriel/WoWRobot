@@ -1,14 +1,11 @@
-local command_id = '11'
-local command = 'hora'
-
-local doc = [[
-	/hora <local>
-
-Retorna a hora, data e fuso horário para o local indicado
-]]
+local command = 'time <location>'
+local doc = [[```
+/time <location>
+Returns the time, date, and timezone for the given location.
+```]]
 
 local triggers = {
-	'^/hora[@'..bot.username..']*'
+	'^/time[@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -18,7 +15,7 @@ local action = function(msg)
 		if msg.reply_to_message and msg.reply_to_message.text then
 			input = msg.reply_to_message.text
 		else
-			sendReply(msg, doc)
+			sendMessage(msg.chat.id, doc, true, msg.message_id, true)
 			return
 		end
 	end
@@ -44,7 +41,7 @@ local action = function(msg)
 	if utcoff == math.abs(utcoff) then
 		utcoff = '+' .. utcoff
 	end
-	local message = 'Hora: ' .. os.date('%I:%M %p\n', timestamp) .. 'Data: ' .. os.date('%d/%b/%Y\n', timestamp) .. 'Fuso horário: UTC' .. utcoff
+	local message = os.date('%I:%M %p\n', timestamp) .. os.date('%A, %B %d, %Y\n', timestamp) .. jdat.timeZoneName .. ' (UTC' .. utcoff .. ')'
 
 	sendReply(msg, message)
 
@@ -54,6 +51,6 @@ return {
 	action = action,
 	triggers = triggers,
 	doc = doc,
-	command = command,
-	command_id = command_id
+	command = command
 }
+

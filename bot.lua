@@ -4,7 +4,7 @@ URL = require('socket.url')
 JSON = require('dkjson')
 
 version = '3.1'
-version_wow = '1.1'
+version_wow = '1.2'
 
 bot_init = function() -- A função é executada quando o bot é iniciado ou recarregado
 
@@ -20,7 +20,7 @@ bot_init = function() -- A função é executada quando o bot é iniciado ou rec
 
 	plugins = {} -- Carrega plugins
 	for i,v in ipairs(config.plugins) do
-		local p = dofile('plugins/'..v)
+		local p = dofile("plugins/"..v)
 		table.insert(plugins, p)
 	end
 

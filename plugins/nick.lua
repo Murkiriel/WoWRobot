@@ -24,7 +24,7 @@ local action = function(msg)
 		return true
 	end
 
-	nicks = load_data('nicknames.json')
+	nicks = load_data('data/nicknames.json')
 
 	if input == '-' then
 		nicks[msg.from.id_str] = nil
@@ -34,7 +34,7 @@ local action = function(msg)
 		sendReply(msg, 'Seu apelido foi definido para "' .. input .. '"')
 	end
 
-	save_data('nicknames.json', nicks)
+	save_data('data/nicknames.json', nicks)
 	return true
 
 end

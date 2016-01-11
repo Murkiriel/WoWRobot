@@ -1,4 +1,4 @@
-local command_id = '18'
+local command_id = '17'
 local command = 'wikipedia'
 
 local doc = [[

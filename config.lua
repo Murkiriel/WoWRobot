@@ -9,8 +9,9 @@ return {
 	time_offset = 0,
 	lang = 'pt', -- # SEU IDIOMA
 	cli_port = 4567,
-	admin = 00000000, -- # SEU ID AQUI
+	admin = 000000, -- # SEU ID AQUI
 	admin_name = '', -- # SEU NOME AQUI
+	admin_username = '', -- # SEU NOME DE USUÁRIO AQUI
 	about_text = '',
 	root = '', -- # PASTA DE INSTALAÇÃO DO BOT
 
@@ -70,7 +71,6 @@ return {
 		'gSearch.lua',
 		'shout.lua',
 		'hackernews.lua',
-		'time.lua',
 		'whoami.lua',
 		'imdb.lua',
 		'gMaps.lua',

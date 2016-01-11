@@ -1,6 +1,6 @@
  -- Na verdade o mais simples plugin desde sempre!
 
-local command_id = '15'
+local command_id = '14'
 local command = 'ping'
 
 local doc = [[
