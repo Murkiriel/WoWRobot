@@ -4,7 +4,7 @@ URL = require('socket.url')
 JSON = require('dkjson')
 
 version = '3.1'
-version_wow = '1.2'
+version_wow = '1.2.1'
 
 bot_init = function() -- A função é executada quando o bot é iniciado ou recarregado
 

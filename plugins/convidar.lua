@@ -14,7 +14,7 @@ local triggers = {
 }
 
 local action = function(msg)
-	sendReply(msg, 'Me convide para o seu grupo e deixe ele WoW!!!\n\nhttps://telegram.me/WoWRobot?startgroup=new')
+	sendReply(msg, 'Me convide para o seu grupo e deixe ele WoW!!!\n\nhttps://telegram.me/' .. bot.username .. '?startgroup=new')
 end
 
 return {
