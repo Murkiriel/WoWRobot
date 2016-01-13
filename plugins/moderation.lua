@@ -14,6 +14,7 @@ Sistema de moderação para grupos
 
 
 local triggers = {
+	'^/moderacao[@'..bot.username..']*',
 	'^/modajuda[@'..bot.username..']*',
 	'^/modlista[@'..bot.username..']*',
 	'^/modcast[@'..bot.username..']*',
@@ -21,10 +22,10 @@ local triggers = {
 	'^/modrem[@'..bot.username..']*',
 	'^/modprom[@'..bot.username..']*',
 	'^/modreb[@'..bot.username..']*',
+	'^/addbemvindo[@'..bot.username..']*',
+	'^/bemvindo[@'..bot.username..']*',
 	'^/addregras[@'..bot.username..']*',
-	'^/regras[@'..bot.username..']*',
-	'^/moderacao[@'..bot.username..']*',
-	'^/bemvindo[@'..bot.username..']*'
+	'^/regras[@'..bot.username..']*'
 }
 
 local commands = {
@@ -44,24 +45,25 @@ local commands = {
 		end
 
 		local message = [[
-/bemvindo - Ativar/desativar mensagens de 'Bem-vindo'
+*Comandos do usuário:*
 /modlista - Listar os moderadores e administradores deste grupo
 /regras - Ver regras do grupo
 
-Comandos do administrador:
+*Comandos do moderador:*
+/addbemvindo - Adicionar mensagem de 'Bem-vindo' personalizada
+/bemvindo - Ativar/desativar mensagens de 'Bem-vindo'
 /addregras - Adicionar regras ao grupo
-/modadd - Adicionar este grupo ao sistema de moderação
-/modrem - Remover este grupo do sistema de moderação
 /modprom - Promover um usuário à moderador.
 /modreb - Rebaixar um moderador à usuário.
+
+*Comandos do administrador:*
+/modadd - Adicionar este grupo ao sistema de moderação
+/modrem - Remover este grupo do sistema de moderação
 /modcast - Enviar um broadcast para cada grupo moderado
 ]]
 
--- Comandos do moderador:
--- /kickar - Kickar um usuário deste grupo (Somente grupos Liberbot)
--- /banir - Banir um usuário deste grupo (Somente grupos Liberbot)
-
-		return message
+		sendMessage(msg.chat.id, message, true, msg.message_id, true)
+		return
 
 	end,
 
@@ -119,12 +121,8 @@ Comandos do administrador:
 
 		local moddat = load_data('data/moderation.json')
 
-		for k,v in pairs(moddat) do
-			i, j = string.find(k, 'regras')
-
-			if i == nil then
-				sendMessage(k, message)
-			end
+		for k, v in pairs(moddat) do
+			sendMessage(k, message)
 		end
 
 		return 'O seu broadcast foi enviado'
@@ -186,20 +184,28 @@ Comandos do administrador:
 			return 'Este comando funciona somente em grupos!'
 		end
 
-		if not config.moderation.admins[msg.from.id_str] then
-			return config.errors.not_admin
-		end
-
 		local moddat = load_data('data/moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
 		end
 
+		local usuario = string.lower(msg.from.username)
+
+		if not moddat[msg.chat.id_str]['@' .. usuario] and not config.moderation.admins[msg.from.id_str] then
+			return config.errors.not_mod
+		end
+
 		local modname = msg.text:input()
 
 		if not modname then
-			return 'Promoções devem ser feitas especificando um texto!'
+			return 'Promoções devem ser feitas especificando especificando o nome de usuário dos moderadores!'
+		end
+
+		local modname = string.lower(modname)
+
+		if (string.find(modname, '@([%a%d_])')) == nil or string.len(modname) < 6 then
+			return 'É necessário o uso de um nome de usuário válido!'
 		end
 
 		if moddat[msg.chat.id_str][modname] then
@@ -219,14 +225,16 @@ Comandos do administrador:
 			return 'Este comando funciona somente em grupos!'
 		end
 
-		if not config.moderation.admins[msg.from.id_str] then
-			return config.errors.not_admin
-		end
-
 		local moddat = load_data('data/moderation.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
+		end
+
+		local usuario = string.lower(msg.from.username)
+
+		if not moddat[msg.chat.id_str]['@' .. usuario] and not config.moderation.admins[msg.from.id_str] then
+			return config.errors.not_mod
 		end
 
 		local modname = msg.text:input()
@@ -235,37 +243,24 @@ Comandos do administrador:
 			return 'Rebaixamentos devem ser feitos especificando o nome de usuário dos moderadores!'
 		end
 
+		local modname = string.lower(modname)
+
+		if '@' .. usuario == modname then
+			return 'Você não pode se rebaixar!'
+		end
+
+		if (string.find(modname, '@([%a%d_])')) == nil or string.len(modname) < 6 then
+			return 'É necessário o uso de um nome de usuário válido!'
+		end
+
 		if not moddat[msg.chat.id_str][modname] then
 			return 'O usuário não é um moderador!'
 		end
 
-		local modname = moddat[msg.chat.id_str][modname]
 		moddat[msg.chat.id_str][modname] = nil
 		save_data('data/moderation.json', moddat)
 
 		return modname .. ' não é mais um moderador!'
-
-	end,
-
-	['^/bemvindo[@'..bot.username..']*'] = function(msg)
-
-		if not msg.chat.title then
-			return 'Este comando funciona somente em grupos!'
-		end
-
-		local bemdat = load_data('data/bemvindo.json')
-
-		bemvindo = bemdat[msg.chat.id_str]
-
-		if bemvindo == false then
-			bemdat[msg.chat.id_str] = true
-			save_data('data/bemvindo.json', bemdat)
-			return 'As mensagens de \'Bem-vindo\' foram ativadas para este grupo!'
-		else
-			bemdat[msg.chat.id_str] = false
-			save_data('data/bemvindo.json', bemdat)
-			return 'As mensagens de \'Bem-vindo\' foram desativadas para este grupo!'
-		end
 
 	end,
 
@@ -275,14 +270,19 @@ Comandos do administrador:
 			return 'Este comando funciona somente em grupos!'
 		end
 
+		local moddat = load_data('data/moderation.json')
 		local regdat = load_data('data/regras.json')
+
+		if not moddat[msg.chat.id_str] then
+			return config.errors.moderation
+		end
 
 		message = regdat[msg.chat.id_str]
 
 		if not message then
-			return 'Regras do grupo ainda não definidas!'
+			return 'Regras do Grupo ' .. msg.chat.title .. ' ainda não definidas!'
 		else
-			sendReply(msg, message .. '\n\nUse /modlista para ver os moderadores')
+			return message .. '\n\nUse /modlista para ver os moderadores'
 		end
 
 		return nil
@@ -302,32 +302,94 @@ Comandos do administrador:
 			return config.errors.moderation
 		end
 
-		for k, v in pairs(moddat[msg.chat.id_str]) do
+		local usuario = string.lower(msg.from.username)
 
-			if '@' .. msg.from.username == v or config.moderation.admins[msg.from.id_str] then
+		if moddat[msg.chat.id_str]['@' .. usuario] or config.moderation.admins[msg.from.id_str] then
 
-				local regras = msg.text:input()
+			local regras = msg.text:input()
 
-				if not regras then
-					if msg.reply_to_message then
-						regras = tostring(msg.reply_to_message.text)
-					else
-						return 'Regras devem ser adicionadas por meio de menções ou especificando um texto!'
-					end
-				end
-
+			if not regras then
+				return 'Regras devem ser adicionadas especificando um texto!'
+			else
 				regdat[msg.chat.id_str] = regras
 				save_data('data/regras.json', regdat)
-
 				return 'As regras deste grupo foram definidas com sucesso!'
 			end
-
+		else
+			return config.errors.not_mod
 		end
 
-		if not v then
-			return 'Defina os moderadores deste grupo primeiro!'
+	end,
+
+	['^/bemvindo[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('data/moderation.json')
+		local bemdat = load_data('data/bemvindo.json')
+
+		if not moddat[msg.chat.id_str] then
+			return config.errors.moderation
+		end
+
+		local usuario = string.lower(msg.from.username)
+
+		if not moddat[msg.chat.id_str]['@' .. usuario] and not config.moderation.admins[msg.from.id_str] then
+			return config.errors.not_mod
+		end
+
+		bemvindo = bemdat[msg.chat.id_str]
+
+		if bemvindo == false then
+			bemdat[msg.chat.id_str] = true
+			save_data('data/bemvindo.json', bemdat)
+			return 'As mensagens de \'Bem-vindo\' foram ativadas para este grupo!'
 		else
-			return 'Você não tem poderes para isso :['
+			bemdat[msg.chat.id_str] = false
+			save_data('data/bemvindo.json', bemdat)
+			return 'As mensagens de \'Bem-vindo\' foram desativadas para este grupo!'
+		end
+
+	end,
+
+	['^/addbemvindo[@'..bot.username..']*'] = function(msg)
+
+		if not msg.chat.title then
+			return 'Este comando funciona somente em grupos!'
+		end
+
+		local moddat = load_data('data/moderation.json')
+		local bemdat = load_data('data/bemvindo.json')
+
+		if not moddat[msg.chat.id_str] then
+			return config.errors.moderation
+		end
+
+		local usuario = string.lower(msg.from.username)
+
+		if moddat[msg.chat.id_str]['@' .. usuario] or config.moderation.admins[msg.from.id_str] then
+
+			local bemvindo = msg.text:input()
+
+			if not bemvindo then
+				message = 'A mensagem de \'Bem-vindo\' personalizada deve ser adicionada especificando um texto!\nUse "/addbemvindo -" para a mensagem padrão.\n\nUse *$nome*, *$usuario* ou *$grupo* para criar a mensagem personalizada. Exemplo:\n\n/addbemvindo Olá *$nome*, seja bem-vindo(a) ao Grupo *$grupo*. Fique à vontade *$usuario* ;]'
+				sendMessage(msg.chat.id, message, true, msg.message_id, true)
+				return
+			elseif bemvindo == '-' then
+				bemdat['mensagem'] = {}
+				bemdat['mensagem'][msg.chat.id_str] = nil
+				save_data('data/bemvindo.json', bemdat)
+				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foram definida para o padrão!'
+			else
+				bemdat['mensagem'] = {}
+				bemdat['mensagem'][msg.chat.id_str] = bemvindo
+				save_data('data/bemvindo.json', bemdat)
+				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foram definida com sucesso!'
+			end
+		else
+			return config.errors.not_mod
 		end
 
 	end

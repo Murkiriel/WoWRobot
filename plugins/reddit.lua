@@ -53,7 +53,7 @@ local action = function(msg)
 		if not v.data.is_self then
 			long_url = '\n' .. v.data.url .. '\n'
 		end
-		local short_url = '[redd.it/' .. v.data.id .. '] '
+		local short_url = 'redd.it/' .. v.data.id
 		message = message .. i .. ') ' .. v.data.title .. '\n' .. short_url .. '\n\n'
 	end
 

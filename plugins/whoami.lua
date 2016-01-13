@@ -22,7 +22,7 @@ local action = function(msg)
 		from_name = from_name .. ' ' .. msg.from.last_name
 	end
 
-	local nicks = load_data('nicknames.json')
+	local nicks = load_data('data/nicknames.json')
 	if nicks[msg.from.id_str] then
 		from_name = from_name .. ', apelidado de ' .. nicks[msg.from.id_str]
 	end
@@ -35,7 +35,7 @@ local action = function(msg)
 	local to_name
 	local message
 	if msg.chat.title then
-		to_name = msg.chat.title .. ' (ID: ' .. math.abs(msg.chat.id) .. ')'
+		to_name = msg.chat.title .. ' (ID: -' .. math.abs(msg.chat.id) .. ')'
 		message = from_name .. '\n\nVocê está no Grupo ' .. to_name
 	else
 		message = from_name .. '\n\nVocê está no meu privado!'

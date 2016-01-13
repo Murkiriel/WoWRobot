@@ -8,10 +8,11 @@ return {
 	thecatapi_key = '',
 	time_offset = 0,
 	lang = 'pt', -- # SEU IDIOMA
+	antisquig = false,
 	cli_port = 4567,
 	admin = 000000, -- # SEU ID AQUI
 	admin_name = '', -- # SEU NOME AQUI
-	admin_username = '', -- # SEU NOME DE USUÁRIO AQUI
+	admin_username = '@', -- # SEU NOME DE USUÁRIO AQUI
 	about_text = '',
 	root = '', -- # PASTA DE INSTALAÇÃO DO BOT
 
@@ -22,7 +23,7 @@ return {
 		syntax		   = 'Sintaxe inválida.',
 		antisquig	   = 'Este grupo é apenas em Português.',
 		moderation	   = 'Eu não modero este grupo.',
-		not_mod		   = 'Este comando deve ser executado por um moderador.',
+		not_mod		   = 'Este comando deve ser executado por um moderador ou administrador.',
 		not_admin	   = 'Este comando deve ser executado por um administrador.',
 		chatter_connection = 'Eu não me sinto com vontade de falar agora.',
 		chatter_response   = 'Eu não sei o que dizer sobre isso.'
@@ -33,7 +34,7 @@ return {
 			'ei',
 			'oi',
 			'bom dia',
-			'bom tarde',
+			'boa tarde',
 			'boa noite',
 			'boa madrugada'
 		},

@@ -7,7 +7,7 @@ local triggers = {
 
  local action = function(msg)
 
-	local blacklist = load_data('blacklist.json')
+	local blacklist = load_data('data/blacklist.json')
 
 	if blacklist[msg.from.id_str] then
 		return -- Fim se o remetente está na lista negra.
@@ -39,7 +39,7 @@ local triggers = {
 		sendReply(msg, input .. ' foi adicionado à lista negra')
 	end
 
-	save_data('blacklist.json', blacklist)
+	save_data('data/blacklist.json', blacklist)
 
  end
 

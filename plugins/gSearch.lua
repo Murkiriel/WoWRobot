@@ -49,7 +49,7 @@ local action = function(msg)
 		return
 	end
 
-	local message = ''
+	local message = '*Resultados para* _' .. input .. '_*:*\n\n'
 	for i,v in ipairs(jdat.responseData.results) do
 		jdat.responseData.results[i].titleNoFormatting = jdat.responseData.results[i].titleNoFormatting:gsub(']', '')
 		message = message .. i .. ') [' .. jdat.responseData.results[i].titleNoFormatting .. ']' .. '(' .. jdat.responseData.results[i].unescapedUrl .. ')' .. '\n\n'

@@ -1,7 +1,8 @@
 -- utilities.lua
 -- Funções compartilhadas entre plugins
 
-function get_word(s, i) -- Obter a palavra indexada em uma string
+ -- Obter a palavra indexada em uma string
+get_word = function(s, i) 
 
 	s = s or ''
 	i = i or 1
@@ -15,7 +16,8 @@ function get_word(s, i) -- Obter a palavra indexada em uma string
 
 end
 
-function string:input() -- Retorna a string após o primeiro espaço
+ -- Retorna a string após o primeiro espaço
+function string:input() 
 	if not self:find(' ') then
 		return false
 	end
@@ -57,14 +59,16 @@ local lc_list = {
 	['!'] = 'ǃ'
 }
 
-function latcyr(str) -- Substitui letras com seus correspondentes caracteres Cyrillic
+ -- Substitui letras com seus correspondentes caracteres Cyrillic
+latcyr = function(str)
 	for k,v in pairs(lc_list) do
 		str = string.gsub(str, k, v)
 	end
 	return str
 end
 
-function load_data(filename) -- Carrega um arquivo JSON como uma tabela
+  -- Carrega um arquivo JSON como uma tabela
+load_data = function(filename)
 
 	local f = io.open(filename)
 	if not f then
@@ -78,7 +82,8 @@ function load_data(filename) -- Carrega um arquivo JSON como uma tabela
 
 end
 
-function save_data(filename, data) -- Salva uma tabela para um arquivo JSON
+ -- Salva uma tabela para um arquivo JSON
+save_data = function(filename, data)
 
 	local s = JSON.encode(data)
 	local f = io.open(filename, 'w')
@@ -88,7 +93,7 @@ function save_data(filename, data) -- Salva uma tabela para um arquivo JSON
 end
 
  -- Obtém coordenadas para um local. Usado por gMaps.lua, time.lua, weather.lua
-function get_coords(input)
+get_coords = function(input)
 
 	local url = 'http://maps.googleapis.com/maps/api/geocode/json?address=' .. URL.escape(input)
 
@@ -106,5 +111,32 @@ function get_coords(input)
 		lat = jdat.results[1].geometry.location.lat,
 		lon = jdat.results[1].geometry.location.lng
 	}
+
+end
+
+ -- Obter o número de valores em uma tabela de chave/valor
+table_size = function(tab)
+
+	local i = 0
+	for k,v in pairs(tab) do
+		i = i + 1
+	end
+	return i
+
+end
+
+resolve_username = function(target)
+ -- Se $target é um nome de usuário conhecido, retorna associada ID
+ -- Se $target é um nome de usuário desconhecido, retorna nil
+ -- Se $target é um número, retorna este número
+ -- Caso contrário, retorna false
+
+	local input = tostring(target):lower()
+	if input:match('^@') then
+		local uname = input:gsub('^@', '')
+		return usernames[uname]
+	else
+		return tonumber(target) or false
+	end
 
 end

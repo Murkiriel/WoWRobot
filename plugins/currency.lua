@@ -6,6 +6,7 @@ local doc = [[
 
 Ex.: /dinheiro 10 USD para BRL
 Retorna as taxas de câmbio para várias moedas
+Fonte: Google Finance
 ]]
 
 local triggers = {
@@ -22,7 +23,9 @@ local action = function(msg)
 
 	local from = input:match('(%a%a%a) PARA')
 	local to = input:match('PARA (%a%a%a)')
-	local amount = input:match('([%d]+) %a%a%a PARA %a%a%a') or 1
+	local amount = get_word(input, 2)  
+	amount = tonumber(amount) or 1  
+
 	local result = 1
 
 	local url = 'https://www.google.com/finance/converter'
@@ -42,12 +45,15 @@ local action = function(msg)
 			return
 		end
 
-		result = str:format('%.2f')
+		result = string.format('%.2f', str)
 
 	end
 
-	local message = amount .. ' ' .. from .. ' = ' .. result .. ' ' .. to
-	sendReply(msg, message)
+	local output = amount .. ' ' .. from .. ' = ' .. result .. ' ' .. to .. '\n\n'  
+	output = output .. os.date('!%F %T UTC') .. '\nFonte: Google Finance'  
+	output = '`' .. output .. '`'  
+
+	sendMessage(msg.chat.id, output, true, nil, true)  
 
 end
 

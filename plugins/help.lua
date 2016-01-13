@@ -14,8 +14,8 @@ help_text = help_text .. '\n\n/ajuda <número>'
 local triggers = {
 	'^/start[@'..bot.username..']*',
 	'^/iniciar[@'..bot.username..']*',
-	'^/ajuda[@'..bot.username..']*',
-	'^/help[@'..bot.username..']*'
+	'^/help[@'..bot.username..']*',
+	'^/ajuda[@'..bot.username..']*'
 }
 
 local action = function(msg)
@@ -34,7 +34,7 @@ local action = function(msg)
 		return
 	end
 
-	for i,v in ipairs(plugins) do
+	for i, v in ipairs(plugins) do
 		if v.command_id and get_word(v.command_id, 1) == input and v.doc then
 			local output = v.doc
 			sendMessage(msg.chat.id, output, true, msg.message_id, true)
@@ -42,7 +42,7 @@ local action = function(msg)
 		end
 	end
 
-	sendReply(msg, 'Desculpe, não há nenhuma ajuda para esse comando')
+	sendMessage(msg.chat.id, help_text, true, msg.message_id, true)
 
 end
 

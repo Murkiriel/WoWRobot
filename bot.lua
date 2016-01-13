@@ -3,8 +3,8 @@ HTTPS = require('ssl.https')
 URL = require('socket.url')
 JSON = require('dkjson')
 
-version = '3.1'
-version_wow = '1.2.1'
+version = '3.2'
+version_wow = '1.3'
 
 bot_init = function() -- A função é executada quando o bot é iniciado ou recarregado
 
@@ -12,10 +12,9 @@ bot_init = function() -- A função é executada quando o bot é iniciado ou rec
 	dofile("bindings.lua") -- Carrega bindings do Telegram
 	dofile("utilities.lua") -- Carrega mistos e funções cross-plugins
 
-	bot = nil
-	while not bot do -- Obter informações sobre bot e tentae novamente se não conseguir se conectar
-		bot = getMe()
-	end
+	-- Buscar informações sobre o bot. Tente até que tenha êxito
+	repeat bot = getMe() until bot 
+
 	bot = bot.result
 
 	plugins = {} -- Carrega plugins
@@ -33,10 +32,15 @@ bot_init = function() -- A função é executada quando o bot é iniciado ou rec
 	last_update = last_update or 0 -- Definir variáveis de loop: atualização do offset
 	last_cron = last_cron or os.time() -- O tempo da última cron job
 	is_started = true -- Se o bot deve ser executado ou não
+	usernames = usernames or {} -- Tabela para armazenar em cache nome de usuário por ID do usuário
 
 end
 
 on_msg_receive = function(msg) -- Executar função sempre que uma mensagem é recebida
+
+	if msg.from.username then  
+		usernames[msg.from.username:lower()] = msg.from.id  
+	end  
 
 	if msg.date < os.time() - 5 then return end -- Não processar mensagens antigas
 	if not msg.text then msg.text = msg.caption or '' end
