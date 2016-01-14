@@ -4,7 +4,7 @@ URL = require('socket.url')
 JSON = require('dkjson')
 
 version = '3.2'
-version_wow = '1.3'
+version_wow = '1.3.1'
 
 bot_init = function() -- A função é executada quando o bot é iniciado ou recarregado
 
@@ -63,7 +63,7 @@ on_msg_receive = function(msg) -- Executar função sempre que uma mensagem é r
 				end)
 				if not success then
 					sendReply(msg, 'Ocorreu um erro inesperado')
-					print(msg.text, result)
+					handle_exception(result, msg.text)
 					return
 				end
 				-- Se a ação retorna uma tabela, verifique a tabela de mensagens
@@ -97,7 +97,9 @@ while is_started do -- Começa um loop enquanto o bot está em execução
 		for i,v in ipairs(plugins) do
 			if v.cron then -- Chamar função cron de cada plugin, se ele tiver um
 				local res, err = pcall(function() v.cron() end)
-				if not res then print('ERRO: '..err) end
+				if not res then
+					handle_exception(err, 'CRON: ' .. i)
+				end
 			end
 		end
 		last_cron = os.time() -- E, finalmente, atualiza a variável

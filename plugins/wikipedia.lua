@@ -63,9 +63,9 @@ local action = function(msg)
 		text = text:sub(1, l-1)
 	end
 	url = url:gsub('https://en.', 'https://pt.')
-	text = text .. '\n\n' .. url
+	text = 'Título: [' .. title .. '](' .. url ..')\n\n' .. text
 
-	sendReply(msg, text)
+	sendMessage(msg.chat.id, text, true, msg.message_id, true)
 
 end
 

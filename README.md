@@ -36,6 +36,10 @@ To start the bot, run `./launch.sh`. To stop the bot, press Ctrl+c twice.
 
 You may also start the bot with `lua bot.lua`, but then it will not restart automatically.
 
+```bash
+# To run a nohup background process
+nohup ./launch.sh &
+```
 
 * * *
 

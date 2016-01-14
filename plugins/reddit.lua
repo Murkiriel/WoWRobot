@@ -46,15 +46,19 @@ local action = function(msg)
 
 	local message = ''
 	for i,v in ipairs(jdat.data.children) do
-		if v.data.over_18 then
-			message = message .. '[NSFW] '
-		end
 		local long_url = '\n'
 		if not v.data.is_self then
 			long_url = '\n' .. v.data.url .. '\n'
 		end
 		local short_url = 'redd.it/' .. v.data.id
-		message = message .. i .. ') ' .. v.data.title .. '\n' .. short_url .. '\n\n'
+		message = message .. i .. ') '
+
+		if v.data.over_18 then
+			message = message .. '[NSFW] '
+		end
+
+		message = message .. v.data.title .. '\n' .. short_url .. '\n\n'
+
 	end
 
 	sendReply(msg, message)

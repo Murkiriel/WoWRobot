@@ -16,14 +16,8 @@ local action = function(msg)
 	local message = config.about_text .. '\n\nSou um bot baseado no otouto v'..version..' que está licenciado sob a GPLv2. Confira em github.com/Murkiriel/WoWRobot'
 
 	local bemdat = load_data('data/bemvindo.json')
-	local bemvindo = ''
+	local bemvindo = bemdat[msg.chat.id_str]
 	local bemvindo_mensagem = ''
-
-	if not bemdat[msg.chat.id_str] then
-		local bemvindo = true
-	else
-		local bemvindo = bemdat[msg.chat.id_str]
-	end
 
 	-- # ADORARIA SUGESTÕES NESTA PARTE :D
 	if not bemdat['mensagem'] then
@@ -34,7 +28,6 @@ local action = function(msg)
 
 	if msg.new_chat_participant and msg.new_chat_participant.id == bot.id then
 		sendMessage(msg.chat.id, message, true)
-		return
 	elseif msg.new_chat_participant and bemvindo ~= false then
 
 		if bemvindo_mensagem == '' then
@@ -60,16 +53,17 @@ local action = function(msg)
 		end
 
 		sendMessage(msg.chat.id, message, true)
-		return
 	elseif string.match(msg.text_lower, '^/sobre[@'..bot.username..']*') then
 		sendReply(msg, message)
 		return
 	end
 
 	-- # ISSO RESOLVEU PARA MIM PROBLEMAS COM MENSAGENS DE SERVIÇO
-	if msg.new_chat_participant or msg.left_chat_participant then
-		bot_init()
-		return
+	if is_started == true then
+		if msg.new_chat_participant or msg.left_chat_participant then
+			bot_init()
+			return
+		end
 	end
 
 	return true

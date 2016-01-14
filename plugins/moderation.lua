@@ -381,12 +381,12 @@ local commands = {
 				bemdat['mensagem'] = {}
 				bemdat['mensagem'][msg.chat.id_str] = nil
 				save_data('data/bemvindo.json', bemdat)
-				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foram definida para o padrão!'
+				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foi definida para o padrão!'
 			else
 				bemdat['mensagem'] = {}
 				bemdat['mensagem'][msg.chat.id_str] = bemvindo
 				save_data('data/bemvindo.json', bemdat)
-				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foram definida com sucesso!'
+				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foi definida com sucesso!'
 			end
 		else
 			return config.errors.not_mod

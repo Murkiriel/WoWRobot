@@ -13,6 +13,7 @@ return {
 	admin = 000000, -- # SEU ID AQUI
 	admin_name = '', -- # SEU NOME AQUI
 	admin_username = '@', -- # SEU NOME DE USUÁRIO AQUI
+	log_chat = nil,
 	about_text = '',
 	root = '', -- # PASTA DE INSTALAÇÃO DO BOT
 
