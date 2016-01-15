@@ -1,6 +1,10 @@
 -- utilities.lua
 -- Funções compartilhadas entre plugins
 
+HTTP = require('socket.http')  
+HTTPS = require('ssl.https')  
+JSON = require('dkjson')  
+
  -- Obter a palavra indexada em uma string
 get_word = function(s, i) 
 
@@ -151,5 +155,43 @@ handle_exception = function(err, message)
 	else
 		print(output)
 	end
+
+end
+
+ -- Okay, este que eu realmente fiz uma cópia do yagop
+ -- https://github.com/yagop/telegram-bot/blob/master/bot/utils.lua
+download_file = function(url, filename)
+
+	local respbody = {}
+	local options = {
+		url = url,
+		sink = ltn12.sink.table(respbody),
+		redirect = true
+	}
+
+	local response = nil
+
+	if url:match('^https') then
+		options.redirect = false
+		response = { HTTPS.request(options) }
+	else
+		response = { HTTP.request(options) }
+	end
+
+	local code = response[2]
+	local headers = response[3]
+	local status = response[4]
+
+	if code ~= 200 then return false end
+
+	filename = filename or os.time()
+
+	local file_path = '/tmp/'..filename
+
+	file = io.open(file_path, 'w+')
+	file:write(table.concat(respbody))
+	file:close()
+
+	return file_path
 
 end

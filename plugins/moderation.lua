@@ -163,6 +163,7 @@ local commands = {
 
 		local moddat = load_data('data/moderation.json')
 		local regdat = load_data('data/regras.json')
+		local bemdat = load_data('data/bemvindo.json')
 
 		if not moddat[msg.chat.id_str] then
 			return config.errors.moderation
@@ -173,6 +174,9 @@ local commands = {
 
 		regdat[msg.chat.id_str] = nil
 		save_data('data/regras.json', regdat)
+
+		bemdat[msg.chat.id_str] = nil
+		save_data('data/bemvindo.json', bemdat)
 
 		return 'Eu não estou mais moderando este grupo!'
 
@@ -378,13 +382,11 @@ local commands = {
 				sendMessage(msg.chat.id, message, true, msg.message_id, true)
 				return
 			elseif bemvindo == '-' then
-				bemdat['mensagem'] = {}
-				bemdat['mensagem'][msg.chat.id_str] = nil
+				bemdat[msg.chat.id_str] = nil
 				save_data('data/bemvindo.json', bemdat)
 				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foi definida para o padrão!'
 			else
-				bemdat['mensagem'] = {}
-				bemdat['mensagem'][msg.chat.id_str] = bemvindo
+				bemdat[msg.chat.id_str] = bemvindo
 				save_data('data/bemvindo.json', bemdat)
 				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foi definida com sucesso!'
 			end

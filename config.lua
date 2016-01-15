@@ -6,6 +6,7 @@ return {
 	owm_api_key = '',
 	biblia_api_key = '',
 	thecatapi_key = '',
+	nasa_api_key = '',
 	time_offset = 0,
 	lang = 'pt', -- # SEU IDIOMA
 	antisquig = false,
@@ -15,7 +16,7 @@ return {
 	admin_username = '@', -- # SEU NOME DE USUÁRIO AQUI
 	log_chat = nil,
 	about_text = '',
-	root = '', -- # PASTA DE INSTALAÇÃO DO BOT
+	tmp = '/tmp/',
 
 	errors = {
 		connection	   = 'Erro de conexão.',
@@ -60,10 +61,10 @@ return {
 	},
 	plugins = {
 		'moderation.lua',
-		'blacklist.lua',
-		'floodcontrol.lua',
 		'control.lua',
+		'blacklist.lua',
 		'about.lua',
+		'floodcontrol.lua',
 		'nick.lua',
 		'calc.lua',
 		'convidar.lua',

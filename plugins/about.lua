@@ -17,20 +17,12 @@ local action = function(msg)
 
 	local bemdat = load_data('data/bemvindo.json')
 	local bemvindo = bemdat[msg.chat.id_str]
-	local bemvindo_mensagem = ''
-
-	-- # ADORARIA SUGESTÕES NESTA PARTE :D
-	if not bemdat['mensagem'] then
-	elseif not bemdat['mensagem'][msg.chat.id_str] then
-	else
-		bemvindo_mensagem = bemdat['mensagem'][msg.chat.id_str]
-	end
 
 	if msg.new_chat_participant and msg.new_chat_participant.id == bot.id then
 		sendMessage(msg.chat.id, message, true)
 	elseif msg.new_chat_participant and bemvindo ~= false then
 
-		if bemvindo_mensagem == '' then
+		if bemvindo == nil or bemvindo == true then
 			local msg_regras = ''
 			local regdat = load_data('data/regras.json')
 
@@ -40,16 +32,16 @@ local action = function(msg)
 
 			message = 'Olá ' .. msg.new_chat_participant.first_name .. '!\nSeja bem-vindo(a) ao Grupo ' .. msg.chat.title .. ' ;]' .. msg_regras
 		else
-			bemvindo_mensagem = string.gsub(bemvindo_mensagem, '$nome', msg.new_chat_participant.first_name)
-			bemvindo_mensagem = string.gsub(bemvindo_mensagem, '$grupo', msg.chat.title)
+			bemvindo = string.gsub(bemvindo, '$nome', msg.new_chat_participant.first_name)
+			bemvindo = string.gsub(bemvindo, '$grupo', msg.chat.title)
 
 			if not msg.new_chat_participant.username then
-				bemvindo_mensagem = string.gsub(bemvindo_mensagem, '$usuario', msg.new_chat_participant.first_name)
+				bemvindo = string.gsub(bemvindo, '$usuario', msg.new_chat_participant.first_name)
 			else
-				bemvindo_mensagem = string.gsub(bemvindo_mensagem, '$usuario', '@' .. msg.new_chat_participant.username)
+				bemvindo = string.gsub(bemvindo, '$usuario', '@' .. msg.new_chat_participant.username)
 			end
 
-			message = bemvindo_mensagem
+			message = bemvindo
 		end
 
 		sendMessage(msg.chat.id, message, true)

@@ -35,11 +35,10 @@ local action = function(msg)
 
 	strnome = str:gsub('/', '_')
 
-	os.execute('wget --user-agent="Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.3) Gecko/2008092416 Firefox/3.0.3" -c -O ' .. strnome .. ' ' .. str)
+	download_file(str, strnome)
 
-	sendPhoto(msg.chat.id, config.root .. strnome, '😻',msg.message_id)
+	sendPhoto(msg.chat.id, config.tmp .. strnome, '😻',msg.message_id)
 
-	os.execute('rm ' .. strnome)
 end
 
 return {

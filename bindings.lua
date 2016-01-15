@@ -1,3 +1,10 @@
+-- bindings.lua  
+-- Ligações para o bot API Telegram
+-- https://core.telegram.org/bots/api  
+
+assert(HTTPS)  
+assert(JSON)  
+
 local BASE_URL = 'https://api.telegram.org/bot' .. config.bot_api_key
 
 if not config.bot_api_key then

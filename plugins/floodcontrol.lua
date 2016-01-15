@@ -1,5 +1,5 @@
  -- Controle de flood compatível com Liberbot
- -- Poloque isso depois de moderation.lua ou blacklist.lua.
+ -- Poloque isso depois de moderation.lua ou blacklist.lua
 
 floodcontrol = floodcontrol or {}
 
@@ -17,7 +17,7 @@ local action = function(msg)
 	if not input then return true end
 
 	if msg.from.id ~= 100547061 and msg.from.id ~= config.admin then
-		return -- Só executar para Liberbot ou o administrador.
+		return -- Só executar para Liberbot ou o administrador
 	end
 
 	input = JSON.decode(input)
@@ -31,7 +31,8 @@ local action = function(msg)
 
 	floodcontrol[input.groupid] = os.time() + input.duration
 
-	print(input.groupid .. ' silenciado por ' .. input.duration .. ' segundos')
+	local output = input.groupid .. ' silenciado por ' .. input.duration .. ' segundos.'
+	handle_exception('floodcontrol.lua', output)
 
 end
 

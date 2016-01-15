@@ -65,12 +65,11 @@ local action = function(msg)
 	local resposta = t
 
 	-- # ÍNICIO DO QUE VOCÊ DEVE MODIFICAR
-	--[[var1, j = string.find(resposta, 'Kyr')  -- # Procura certas palavras-chave na resposta
-	var2, j = string.find(resposta, 'CONPET')  -- # Procura certas palavras-chave na resposta
+	var1, j = string.find(resposta, 'ED')  -- # Procura certas palavras-chave na resposta
 
-	if var1 ~= nil or var2 ~= nil then  -- # Se a palavra-chave existir faça isso abaixo
-		resposta = 'Nem sei sobre isso :P' -- # Troca a resposta pelo que você quiser
-	end]]
+	if var1 ~= nil then  -- # Se a palavra-chave existir faça isso abaixo
+		resposta = 'Meu nome representa uma exclamação de surpresa, maravilha, prazer ou semelhante :]' -- # Troca a resposta pelo que você quiser
+	end
 
 	resposta = string.gsub(resposta, 'Ed ', 'WoW ') -- # Troca o nome 'Ed ' por 'WoW'. Altere 'WoW' para o que desejar
 	resposta = string.gsub(resposta, 'Ed.', 'WoW.') -- # Troca o nome 'Ed ' por 'WoW'. Altere 'WoW' para o que desejar
