@@ -19,7 +19,7 @@ local action = function(msg)
 	local bemvindo = bemdat[msg.chat.id_str]
 
 	if msg.new_chat_participant and msg.new_chat_participant.id == bot.id then
-		sendMessage(msg.chat.id, message, true)
+		sendMessage(msg.chat.id, message, true, msg.message_id, true)
 	elseif msg.new_chat_participant and bemvindo ~= false then
 
 		if bemvindo == nil or bemvindo == true then
@@ -30,7 +30,7 @@ local action = function(msg)
 				msg_regras = '\n\nUse /regras'
 			end
 
-			message = 'Olá ' .. msg.new_chat_participant.first_name .. '!\nSeja bem-vindo(a) ao Grupo ' .. msg.chat.title .. ' ;]' .. msg_regras
+			message = 'Olá *' .. msg.new_chat_participant.first_name .. '*!\nSeja bem-vindo(a) ao Grupo _' .. msg.chat.title .. '_ ;]' .. msg_regras
 		else
 			bemvindo = string.gsub(bemvindo, '$nome', msg.new_chat_participant.first_name)
 			bemvindo = string.gsub(bemvindo, '$grupo', msg.chat.title)
@@ -44,18 +44,10 @@ local action = function(msg)
 			message = bemvindo
 		end
 
-		sendMessage(msg.chat.id, message, true)
+		sendMessage(msg.chat.id, message, true, msg.message_id, true)
 	elseif string.match(msg.text_lower, '^/sobre[@'..bot.username..']*') then
-		sendReply(msg, message)
+		sendMessage(msg.chat.id, message, true, msg.message_id, true)
 		return
-	end
-
-	-- # ISSO RESOLVEU PARA MIM PROBLEMAS COM MENSAGENS DE SERVIÇO
-	if is_started == true then
-		if msg.new_chat_participant or msg.left_chat_participant then
-			bot_init()
-			return
-		end
 	end
 
 	return true

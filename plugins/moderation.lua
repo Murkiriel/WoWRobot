@@ -32,7 +32,7 @@ local commands = {
 
 	['^/moderacao[@'..bot.username..']*'] = function(msg)
 
-		return 'Chame o ' .. config.admin_username .. ' para que ele possa lhe ajudar com a moderação do seu grupo!'
+		return 'Chame o ' .. config.admin_username .. ' para que ele possa lhe ajudar com a moderação do seu grupo ou use /modajuda caso eu já esteja moderando este grupo!'
 
 	end,
 
@@ -373,25 +373,24 @@ local commands = {
 
 		local usuario = string.lower(msg.from.username)
 
-		if moddat[msg.chat.id_str]['@' .. usuario] or config.moderation.admins[msg.from.id_str] then
-
-			local bemvindo = msg.text:input()
-
-			if not bemvindo then
-				message = 'A mensagem de \'Bem-vindo\' personalizada deve ser adicionada especificando um texto!\nUse "/addbemvindo -" para a mensagem padrão.\n\nUse *$nome*, *$usuario* ou *$grupo* para criar a mensagem personalizada. Exemplo:\n\n/addbemvindo Olá *$nome*, seja bem-vindo(a) ao Grupo *$grupo*. Fique à vontade *$usuario* ;]'
-				sendMessage(msg.chat.id, message, true, msg.message_id, true)
-				return
-			elseif bemvindo == '-' then
-				bemdat[msg.chat.id_str] = nil
-				save_data('data/bemvindo.json', bemdat)
-				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foi definida para o padrão!'
-			else
-				bemdat[msg.chat.id_str] = bemvindo
-				save_data('data/bemvindo.json', bemdat)
-				return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foi definida com sucesso!'
-			end
-		else
+		if not moddat[msg.chat.id_str]['@' .. usuario] and not config.moderation.admins[msg.from.id_str] then
 			return config.errors.not_mod
+		end
+
+		local bemvindo = msg.text:input()
+
+		if not bemvindo then
+			message = 'A mensagem de \'Bem-vindo\' personalizada deve ser adicionada especificando um texto!\nUse "/addbemvindo -" para a mensagem padrão.\n\nUse *$nome*, *$usuario* ou *$grupo* para criar a mensagem personalizada. Exemplo:\n\n/addbemvindo Olá *$nome*, seja bem-vindo(a) ao Grupo *$grupo*. Fique à vontade *$usuario* ;]'
+			sendMessage(msg.chat.id, message, true, msg.message_id, true)
+			return
+		elseif bemvindo == '-' then
+			bemdat[msg.chat.id_str] = nil
+			save_data('data/bemvindo.json', bemdat)
+			return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foi definida para o padrão!'
+		else
+			bemdat[msg.chat.id_str] = bemvindo
+			save_data('data/bemvindo.json', bemdat)
+			return 'A mensagem personalizada de \'Bem-vindo\' deste grupo foi definida com sucesso!'
 		end
 
 	end

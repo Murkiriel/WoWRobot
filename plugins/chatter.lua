@@ -25,8 +25,8 @@ local action = function(msg)
 	sendChatAction(msg.chat.id, 'typing')
 
 	local input = msg.text_lower
-	input = input:gsub('@' .. bot.username, 'ed')
-	input = input:gsub('wow', 'ed')
+	input = input:gsub('@' .. bot.username, '')
+	input = input:gsub('wow', '')
 
 	local url = 'http://www.ed.conpet.gov.br/mod_perl/bot_gateway.cgi?server=0.0.0.0:8085&pure=1&js=1&msg=' .. URL.escape(input)
 

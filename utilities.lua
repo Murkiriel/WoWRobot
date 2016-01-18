@@ -195,3 +195,26 @@ download_file = function(url, filename)
 	return file_path
 
 end
+
+spairs = function(t, order)
+	-- Recolhe as chaves
+	local keys = {}
+	for k in pairs(t) do keys[#keys+1] = k end
+
+	-- Se a função informar a ordem, classificar por ele passando a tabela e as chaves a, b,
+	-- caso contrário, apenas ordenar as chave
+	if order then
+		table.sort(keys, function(a,b) return order(t, a, b) end)
+	else
+		table.sort(keys)
+	end
+
+	-- Retornar a função iterator
+	local i = 0
+	return function()
+		i = i + 1
+		if keys[i] then
+			return keys[i], t[keys[i]]
+		end
+	end
+end

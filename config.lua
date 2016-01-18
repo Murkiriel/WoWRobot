@@ -79,12 +79,14 @@ return {
 		'gMaps.lua',
 		'ping.lua',
 		'pokedex.lua',
+		'ranking_data.lua',
+		'ranking.lua',
 		'reddit.lua',
 		'wikipedia.lua',
 		'xda.lua',
 		'youtube.lua',
-		-- Colocar novos plugins aqui
 		'help.lua',
+		-- Colocar novos plugins aqui
 		--'greetings.lua',
 		'chatter.lua'
 	}
