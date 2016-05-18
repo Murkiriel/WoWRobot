@@ -1,3 +1,4 @@
+
 -- Colocar esta absolutamente no final, mesmo após greetings.lua
 
 local triggers = {
@@ -18,19 +19,17 @@ local action = function(msg)
 	elseif msg.reply_to_message and msg.reply_to_message.from.id == bot.id then
 	elseif msg.from.id == msg.chat.id then
 	elseif palavrachave ~= nil then
-	else
-		return true
-	end
+	else return true end
 
 	sendChatAction(msg.chat.id, 'typing')
 
 	local input = msg.text_lower
-	input = input:gsub('@' .. bot.username, '')
-	input = input:gsub('wow', '')
+	input = input:gsub('@' .. bot.username, 'ed')
+	input = input:gsub('wow', 'ed')
 
-	local url = 'http://www.ed.conpet.gov.br/mod_perl/bot_gateway.cgi?server=0.0.0.0:8085&pure=1&js=1&msg=' .. URL.escape(input)
+	local url = 'http://bot.insite.com.br/cgi-bin/bot_gateway.cgi?server=127.0.0.1:8085&js=1&msg=' .. URL.escape(input)
 
-	local t, res = HTTP.request(url)
+	local resposta, res = HTTP.request(url)
 
 	if res ~= 200 then
 		sendReply(msg, config.errors.chatter_response)
@@ -52,17 +51,16 @@ local action = function(msg)
 		{ "[\n\n]+", "\n" },
 		{ "^\n*", "" },
 		{ "\n*$", "" },
+		{ "var resp = '", "" },
+		{ "\\r\\n';", "" },
+		{ "<a href=\\\"#", "" },
+		{ "\\\"", "" }
 	}
 
 	for i=1, #cleaner do
 		local cleans = cleaner[i]
-		t = string.gsub(t, cleans[1], cleans[2])
+		resposta = string.gsub(resposta, cleans[1], cleans[2])
 	end
-
-	t=t:gsub('<a.->(.-)</a>','')
-	t=t:gsub('<a href="#','')
-
-	local resposta = t
 
 	-- # ÍNICIO DO QUE VOCÊ DEVE MODIFICAR
 	var1, j = string.find(resposta, 'ED')  -- # Procura certas palavras-chave na resposta
@@ -71,11 +69,17 @@ local action = function(msg)
 		resposta = 'Meu nome representa uma exclamação de surpresa, maravilha, prazer ou semelhante :]' -- # Troca a resposta pelo que você quiser
 	end
 
+	var2, j = string.find(resposta, 'Sigla de Energia e Desenvolvimento')  -- # Procura certas palavras-chave na resposta
+
+	if var2 ~= nil then  -- # Se a palavra-chave existir faça isso abaixo
+		resposta = 'Meu nome representa uma exclamação de surpresa, maravilha, prazer ou semelhante :]' -- # Troca a resposta pelo que você quiser
+	end
+
 	resposta = string.gsub(resposta, 'Ed ', 'WoW ') -- # Troca o nome 'Ed ' por 'WoW'. Altere 'WoW' para o que desejar
 	resposta = string.gsub(resposta, 'Ed.', 'WoW.') -- # Troca o nome 'Ed ' por 'WoW'. Altere 'WoW' para o que desejar
 	-- # FIM DO QUE VOCÊ DEVE MODIFICAR
 
-	local message = resposta
+	local message = UTF8.escape(resposta)
 
 	if message:match('^I HAVE NO RESPONSE.') then
 		message = config.errors.chatter_response

@@ -13,12 +13,14 @@ Telegram [@Murkiriel](http://telegram.me/Murkiriel)
 
 ```bash
 # Tested on Ubuntu 15.10
-sudo apt-get install lua5.2 liblua5.2-dev lua-socket lua-sec
+sudo apt-get install lua5.1 liblua5.1-0-dev lua-socket lua-sec
+
+luarocks install luautf8
 
 git clone https://github.com/Murkiriel/WoWRobot.git
 ```
 
-You **must** have Lua (5.2+), LuaSocket, and LuaSec installed. For uploading photos and other files, you must have curl installed. The fortune.lua plugin requires that fortune is installed.
+You **must** have Lua (5.1+), LuaSocket, and LuaSec installed. For uploading photos and other files, you must have curl installed. The fortune.lua plugin requires that fortune is installed.
 
 For weather.lua, lastfm.lua, and bible.lua to work, you must have API keys for [OpenWeatherMap](http://openweathermap.org), [last.fm](http://last.fm), and [Biblia.com](http://biblia.com), respectively. cats.lua uses an API key (via [The Cat API](http://thecatapi.com)) to get more results, though it is not required.
 
