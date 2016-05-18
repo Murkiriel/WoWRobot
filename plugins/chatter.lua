@@ -1,3 +1,4 @@
+local UTF8 = require('luautf8')
 
 -- Colocar esta absolutamente no final, mesmo após greetings.lua
 
