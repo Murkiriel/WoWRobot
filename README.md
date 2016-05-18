@@ -12,7 +12,7 @@ Telegram [@Murkiriel](http://telegram.me/Murkiriel)
 ##Setup
 
 ```bash
-# Tested on Ubuntu 15.10
+# Tested on Ubuntu Gnome 16.04
 sudo apt-get install lua5.1 liblua5.1-0-dev lua-socket lua-sec
 
 luarocks install luautf8
