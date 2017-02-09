@@ -13,7 +13,7 @@ bot_init = function() -- A função é executada quando o bot é iniciado ou rec
 	dofile("utilities.lua") -- Carrega mistos e funções cross-plugins
 
 	-- Buscar informações sobre o bot. Tente até que tenha êxito
-	repeat bot = getMe() until bot 
+	repeat bot = getMe() until bot
 
 	bot = bot.result
 
@@ -38,45 +38,46 @@ end
 
 on_msg_receive = function(msg) -- Executar função sempre que uma mensagem é recebida
 
-	if msg.from.username then  
-		usernames[msg.from.username:lower()] = msg.from.id  
-	end  
+	if msg then
+		if msg.from.username then
+			usernames[msg.from.username:lower()] = msg.from.id
+		end
 
-	if msg.date < os.time() - 5 then return end -- Não processar mensagens antigas
-	if not msg.text then msg.text = msg.caption or '' end
+		if msg.date < os.time() - 5 then return end -- Não processar mensagens antigas
+		if not msg.text then msg.text = msg.caption or '' end
 
-	if msg.text:match('^/start .+') then
-		msg.text = '/' .. msg.text:input()
-	end
+		if msg.text:match('^/start .+') then
+			msg.text = '/' .. msg.text:input()
+		end
 
-	for i,v in ipairs(plugins) do
-		for k,w in pairs(v.triggers) do
-			if string.match(msg.text:lower(), w) then
+		for i,v in ipairs(plugins) do
+			for k,w in pairs(v.triggers) do
+				if string.match(msg.text:lower(), w) then
 
-				-- Alguns atalhos
-				msg.chat.id_str = tostring(msg.chat.id)
-				msg.from.id_str = tostring(msg.from.id)
-				msg.text_lower = msg.text:lower()
+					-- Alguns atalhos
+					msg.chat.id_str = tostring(msg.chat.id)
+					msg.from.id_str = tostring(msg.from.id)
+					msg.text_lower = msg.text:lower()
 
-				local success, result = pcall(function()
-					return v.action(msg)
-				end)
-				if not success then
-					sendReply(msg, 'Ocorreu um erro inesperado')
-					handle_exception(result, msg.text)
-					return
-				end
-				-- Se a ação retorna uma tabela, verifique a tabela de mensagens
-				if type(result) == 'table' then
-					msg = result
-				-- Se a ação retornar verdadeiro, não pare
-				elseif result ~= true then
-					return
+					local success, result = pcall(function()
+						return v.action(msg)
+					end)
+					if not success then
+						sendReply(msg, 'Ocorreu um erro inesperado')
+						handle_exception(result, msg.text)
+						return
+					end
+					-- Se a ação retorna uma tabela, verifique a tabela de mensagens
+					if type(result) == 'table' then
+						msg = result
+					-- Se a ação retornar verdadeiro, não pare
+					elseif result ~= true then
+						return
+					end
 				end
 			end
 		end
 	end
-
 end
 
 bot_init() -- Inicia o script de verdade. Executa a função bot_init
@@ -89,8 +90,6 @@ while is_started do -- Começa um loop enquanto o bot está em execução
 			last_update = v.update_id
 			on_msg_receive(v.message)
 		end
-	else
-		print(config.errors.connection)
 	end
 
 	if last_cron < os.time() - 5 then -- Executar cron jobs de quem chegou o momento
